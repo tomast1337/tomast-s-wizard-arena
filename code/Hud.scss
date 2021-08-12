@@ -1,0 +1,53 @@
+Status {
+    position: absolute;
+    left: 100px;
+    bottom: 48px;
+    font-weight: bold;
+    color: white;
+    height: 80px;
+    width: 80px;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    padding: 0 10px;
+    
+
+    .healthLabel {
+        padding: 5px;
+        color: orangered;
+        height: 80px;
+        width: 80px;
+        right: 90px;
+        font-size: 40px;
+        padding: 0 5px;
+        align-items: center;
+        position: absolute;
+        text-shadow: 4px 4px 4px #000000;
+    }
+
+    .manaLabel {
+        padding: 5px;
+        color: purple;
+        height: 80px;
+        width: 80px;
+        right: 0px;
+        font-size: 40px;
+        padding: 0 5px;
+        align-items: center;
+        position: absolute;
+        text-shadow: 4px 4px 4px #000000;
+    }
+
+    .staminaLabel {
+        padding: 5px;
+        color: forestgreen;
+        height: 80px;
+        width: 80px;
+        right: -80px;
+        font-size: 40px;
+        padding: 0 5px;
+        align-items: center;
+        position: absolute;
+        text-shadow: 4px 4px 4px #000000;
+    }
+}
