@@ -32,7 +32,7 @@ namespace Tomast1337
 			WizzadWalkController wwC = (WizzadWalkController)player.Controller;
 			HealthLabel.Text = $"{player.Health}";
 			ManaLabel.Text = $"{player.Mana}";
-			StaminaLabel.Text = $"{(int)wwC.Stamina}";
+			StaminaLabel.Text = $"{(wwC == null?0:( int)wwC.Stamina)}";
 		}
 	}
 }
