@@ -1,53 +1,56 @@
 Status {
     position: absolute;
-    left: 100px;
-    bottom: 48px;
+    left: 25px;
+    bottom: 32px;
     font-weight: bold;
-    color: white;
     height: 80px;
-    width: 80px;
+    width: 320px;
     justify-content: center;
     align-items: center;
     text-align: center;
-    padding: 0 10px;
-    
+    font-size: 40px;
 
     .healthLabel {
-        padding: 5px;
-        color: orangered;
-        height: 80px;
-        width: 80px;
-        right: 90px;
-        font-size: 40px;
-        padding: 0 5px;
-        align-items: center;
-        position: absolute;
-        text-shadow: 4px 4px 4px #000000;
+        color: red;
+        text-shadow: 4px 4px 20px red;
     }
 
     .manaLabel {
-        padding: 5px;
-        color: purple;
-        height: 80px;
-        width: 80px;
-        right: 0px;
-        font-size: 40px;
-        padding: 0 5px;
-        align-items: center;
-        position: absolute;
-        text-shadow: 4px 4px 4px #000000;
+        color: mediumpurple;
+        text-shadow: 4px 4px 20px mediumpurple;
     }
 
     .staminaLabel {
-        padding: 5px;
         color: forestgreen;
-        height: 80px;
-        width: 80px;
-        right: -80px;
-        font-size: 40px;
-        padding: 0 5px;
-        align-items: center;
-        position: absolute;
-        text-shadow: 4px 4px 4px #000000;
+        text-shadow: 4px 4px 20px forestgreen;
+    }
+}
+
+PowerBar {
+    position: absolute;
+    right: 25px;
+    bottom: 32px;
+    height: 80px;
+    width: 320px;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    padding: 10px;
+    font-size: 60px;
+
+    .fireLabel {
+        text-shadow: 5px 5px 10px orange, -5px -5px 10px red;
+    }
+
+    .earthLabel {
+        text-shadow: 5px 5px 10px green, -5px -5px 10px blue;
+    }
+
+    .lightningLabel {
+        text-shadow: 5px 5px 10px black, -5px -5px 10px yellow;
+    }
+
+    .lifeLabel {
+        text-shadow: 5px 5px 10px red, -5px -5px 10px pink;
     }
 }
