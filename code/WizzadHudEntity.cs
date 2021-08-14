@@ -18,6 +18,7 @@ namespace Tomast1337
 			RootPanel.AddChild<CrosshairCanvas>();
 			RootPanel.AddChild<VoiceList>();
 			RootPanel.AddChild<Status>();
+			RootPanel.AddChild<PowerBar>();
 		}
 	}
 }
