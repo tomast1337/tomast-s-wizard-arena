@@ -6,6 +6,11 @@ namespace Tomast1337
 	public partial class WizzardPlayer : Player
 	{
 		public float Mana { get; set; } = 100;
+		public bool Fire { get; set; } = false;
+		public bool Earth { get; set; } = false;
+		public bool Lightning { get; set; } = false;
+		public bool Life { get; set; } = false;
+
 
 		private DamageInfo lastDamage;
 		
@@ -13,6 +18,7 @@ namespace Tomast1337
 		{
 			
 		}
+		
 		public void Dress(String modelPath) {
 			ModelEntity clothe = new ModelEntity();
 
@@ -22,6 +28,7 @@ namespace Tomast1337
 			clothe.EnableShadowInFirstPerson = true;
 			clothe.EnableHideInFirstPerson = true;
 		}
+		
 		public override void Respawn()
 		{
 			Mana = 100;
@@ -124,7 +131,7 @@ namespace Tomast1337
 			ragdoll.DeleteAsync( 30 );
 
 		}
-
+		
 		public override void TakeDamage( DamageInfo info )
 		{
 			if ( GetHitboxGroup( info.HitboxIndex ) == 1 )
@@ -155,5 +162,26 @@ namespace Tomast1337
 			
 		}
 
+		public override void Simulate( Client cl )
+		{
+			
+
+			base.Simulate( cl );
+			if ( Input.Pressed( InputButton.Slot1 ) ) 
+				Fire = !Fire;
+			if ( Input.Pressed( InputButton.Slot2 ) ) 
+				Earth = !Earth;
+			if ( Input.Pressed( InputButton.Slot3 ) ) 
+				Lightning = !Lightning;
+			if ( Input.Pressed( InputButton.Slot4 ) ) 
+				Life = !Life;
+
+			if ( Mana > 100 )
+				Mana += 100;
+			if ( Mana < 0 )
+				Mana += 0;
+			if ( Mana < 100 )
+				Mana += .25f;
+		}
 	}
 }
