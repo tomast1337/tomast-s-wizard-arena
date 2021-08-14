@@ -5,9 +5,10 @@ namespace Tomast1337
 	public class WizzadWalkController : WalkController {
 		public float Stamina { get; set; } = 0;
 		public WizzadWalkController() {
-			AirAcceleration = 250.0f;
+			AirAcceleration = 500.0f;
 			AutoJump = true;
 			Stamina = 100;
+			Acceleration = Acceleration * 2;
 		}
 		public override void Simulate() {
 			base.Simulate();
@@ -44,7 +45,7 @@ namespace Tomast1337
 			//Special jump
 			if ( Input.Down( InputButton.Run ) && Stamina > 10)
 			{
-				Velocity += new Vector3( -Velocity.x/4, -Velocity.y/4, new Vector3( Velocity.x, Velocity.y, 0 ).Length/2 );
+				Velocity += new Vector3( -2 * Velocity.x/5, -2 * Velocity.y/5, 2* new Vector3( Velocity.x, Velocity.y, 0 ).Length/3 );
 				Stamina -= 10f;
 			}
 			Velocity -= new Vector3( 0, 0, Gravity * 0.5f ) * Time.Delta;
