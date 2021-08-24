@@ -10,16 +10,12 @@ namespace Tomast1337
 		public bool Earth { get; set; } = false;
 		public bool Lightning { get; set; } = false;
 		public bool Life { get; set; } = false;
-
-
 		private DamageInfo lastDamage;
-		
 		public WizzardPlayer()
 		{
-			
+			Inventory = new BaseInventory( this );
 		}
-		
-		public void Dress(String modelPath) {
+		public void Dress( String modelPath ) {
 			ModelEntity clothe = new ModelEntity();
 
 			clothe.SetModel( modelPath );
@@ -28,7 +24,6 @@ namespace Tomast1337
 			clothe.EnableShadowInFirstPerson = true;
 			clothe.EnableHideInFirstPerson = true;
 		}
-		
 		public override void Respawn()
 		{
 			Mana = 100;
@@ -36,29 +31,29 @@ namespace Tomast1337
 
 			Controller = new WizzadWalkController();
 			Animator = new StandardPlayerAnimator();
-			Camera = new ThirdPersonCamera();
+			//Camera = new ThirdPersonCamera();
+			Camera = new FirstPersonCamera();
 
 			EnableAllCollisions = true;
 			EnableDrawing = true;
 			EnableHideInFirstPerson = true;
 			EnableShadowInFirstPerson = true;
+
+			Tags.Add( "player" );
+
 			//head
 			Dress( "models/citizen_clothes/hat/hat_leathercap.vmdl" );
-
 			//Chest
 			Dress( "models/citizen_clothes/jacket/jacket_heavy.vmdl" );
-
 			//Legs
 			Dress( "models/citizen_clothes/trousers/trousers.jeans.vmdl" );
-
 			//Feet
 			Dress( "models/citizen_clothes/shoes/shoes.workboots.vmdl" );
-			
-			
+
+			Inventory.Add( new MageStaff(), true );
 
 			base.Respawn();
 		}
-		
 		private void spawnRagdoll( Vector3 velocity, DamageFlags damageFlags, Vector3 forcePos, Vector3 force, int bone ) {
 			ModelEntity ragdoll = new ModelEntity();
 			ragdoll.Position = Position;
@@ -131,7 +126,6 @@ namespace Tomast1337
 			ragdoll.DeleteAsync( 30 );
 
 		}
-		
 		public override void TakeDamage( DamageInfo info )
 		{
 			if ( GetHitboxGroup( info.HitboxIndex ) == 1 )
@@ -145,43 +139,112 @@ namespace Tomast1337
 
 			base.TakeDamage( info );
 		}
-
 		[ClientRpc]
 		public void TookDamage( DamageFlags damageFlags, Vector3 forcePos, Vector3 force )
 		{
 		}
-
 		public override void OnKilled()
 		{
 			base.OnKilled();
-			spawnRagdoll( Velocity, lastDamage.Flags, lastDamage.Position, lastDamage.Force, GetHitboxBone( lastDamage.HitboxIndex ));
+
+			Particles.Create( "particles/impact.flesh.bloodpuff-big.vpcf", lastDamage.Position );
+			Particles.Create( "particles/impact.flesh-big.vpcf", lastDamage.Position );
+			PlaySound( "kersplat" );
+
+			spawnRagdoll( Velocity, lastDamage.Flags, lastDamage.Position, lastDamage.Force, GetHitboxBone( lastDamage.HitboxIndex ) );
 			Camera = new SpectateRagdollCamera();
 			Controller = null;
 			EnableAllCollisions = false;
 			EnableDrawing = false;
-			
+			Inventory.DeleteContents();
 		}
 
+		private void ProcessSlotstButtons() {
+			if ( Input.Pressed( InputButton.Slot1 ) )
+				Fire = !Fire;
+			if ( Input.Pressed( InputButton.Slot2 ) )
+				Earth = !Earth;
+			if ( Input.Pressed( InputButton.Slot3 ) )
+				Lightning = !Lightning;
+			if ( Input.Pressed( InputButton.Slot4 ) )
+				Life = !Life;
+		}
+		private void ProcessMana() {
+			if ( Mana > 100 )
+				Mana = 100;
+			if ( Mana < 0 )
+				Mana = 0;
+			if ( Mana < 100 )
+				Mana += .005f;
+		}
+		private void processAttack() {
+			int attackSum = 0;
+			if ( Fire ) attackSum+=1;
+			if ( Earth ) attackSum+=2;
+			if ( Lightning ) attackSum+=4;
+			if ( Life ) attackSum+=8;
+			switch ( attackSum ) {
+				case 0:// Base -> wind gust
+
+					break;
+				case 1:// Fire -> flame thrower
+
+					break;
+				case 2:// Earth -> rock boulder
+
+					break;
+				case 3:// Fire Earth -> meteor
+
+					break;
+				case 4:// Lightning -> Lightning strike
+
+					break;
+				case 5:// Fire Lightning -> Laser shot
+
+					break;
+				case 6:// Earth Lightning -> Fast rocks shots, Submachine gun like
+
+					break;
+				case 7:// Fire Earth Lightning -> muliple rocks shots, Shotgun like
+
+					break;
+				case 8:// Life -> heal
+
+					break;
+				case 9:// Fire Life -> flame shild
+
+					break;
+				case 10:// Earth Life -> Rock Wall
+
+					break;
+				case 11:// Fire Earth Life -> Fire wall
+
+					break;
+				case 12:// Lightning Life -> force field
+
+					break;
+				case 13:// Fire Lightning Life -> Vampirism Shot, Awp like , Hit or die
+
+					break;
+				case 14:// Earth Lightning Life -> Tree Spawn
+
+					break;
+				case 15:// Fire Earth Lightning Life -> suicide explosion
+
+					break;
+				default:
+					break;
+			}
+		}
 		public override void Simulate( Client cl )
 		{
-			
-
 			base.Simulate( cl );
-			if ( Input.Pressed( InputButton.Slot1 ) ) 
-				Fire = !Fire;
-			if ( Input.Pressed( InputButton.Slot2 ) ) 
-				Earth = !Earth;
-			if ( Input.Pressed( InputButton.Slot3 ) ) 
-				Lightning = !Lightning;
-			if ( Input.Pressed( InputButton.Slot4 ) ) 
-				Life = !Life;
 
-			if ( Mana > 100 )
-				Mana += 100;
-			if ( Mana < 0 )
-				Mana += 0;
-			if ( Mana < 100 )
-				Mana += .25f;
+			ProcessSlotstButtons();
+			
+			ProcessMana();
+			
+			processAttack();
 		}
 	}
 }
