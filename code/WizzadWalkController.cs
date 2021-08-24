@@ -17,9 +17,9 @@ namespace Tomast1337
 				&& !Input.Down( InputButton.Jump ) && GroundEntity != null)
 				Stamina += .25f;
 			if ( Stamina > 100)
-				Stamina += 100;
+				Stamina = 100;
 			if ( Stamina < 0 )
-				Stamina += 0;
+				Stamina = 0;
 		}
 
 		public override void CheckJumpButton()
@@ -42,15 +42,23 @@ namespace Tomast1337
 			
 			Velocity = Velocity.WithZ( startz + flMul * flGroundFactor );
 
+
+			WizzardPlayer player = (WizzardPlayer)Client.Pawn;
 			//Special jump
-			if ( Input.Down( InputButton.Run ) && Stamina > 10)
-			{
-				Velocity += new Vector3( -2 * Velocity.x/5, -2 * Velocity.y/5, 2* new Vector3( Velocity.x, Velocity.y, 0 ).Length/3 );
-				Stamina -= 10f;
+			if ( Input.Down( InputButton.Run ) && Stamina > 6.4f && player.Mana > 1.2f)
+			{				
+				float horizontalVelocity = new Vector3( Velocity.x, Velocity.y, 0 ).Length;
+				float maximunHV = 700;
+				Velocity += new Vector3( Velocity.x/4,
+										 Velocity.y/4,
+										 horizontalVelocity > maximunHV ? maximunHV : horizontalVelocity );
+
+				Stamina -= 6.4f;
+				player.Mana -= 5f;
 			}
 			Velocity -= new Vector3( 0, 0, Gravity * 0.5f ) * Time.Delta;
 
-			Stamina -= 2.75f;
+			Stamina -= 1.75f;
 						
 			AddEvent( "jump" );
 		}
