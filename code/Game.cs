@@ -10,13 +10,14 @@ namespace Tomast1337 {
 			if(IsClient){
 				Log.Info("Created in Clientside");
 			}
-			new WizzadHudEntity();
 		}
-		public override void ClientJoined( Client cl )
+		public override void ClientJoined( Client client )
 		{
-			base.ClientJoined( cl );
+			base.ClientJoined( client );
+			
 			var player = new WizzardPlayer();
-			cl.Pawn = player;
+			client.Pawn = player;
+			
 			player.Respawn();
 		}
 	}
