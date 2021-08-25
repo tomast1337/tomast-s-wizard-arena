@@ -233,15 +233,15 @@ namespace Tomast1337
 				quant = 16;
 				damage = 7.0f;
 				spread = .8f;
-				
-				TimeSinceSecondaryAttack = -0.7f;
-				TimeSincePrimaryAttack = -2;
 				KnockbackPower = 600;
+
+				TimeSinceSecondaryAttack = -0.7f;
+				TimeSincePrimaryAttack = 1;
 			}
 			else
 			{
 				TimeSincePrimaryAttack = 0.5f;
-				TimeSinceSecondaryAttack = 1.9f;
+				TimeSinceSecondaryAttack = -1.9f;
 			}
 			for ( int i = 0; i < quant; i++ ){
 				ShootBullet( Owner.EyePos, Owner.EyeRot.Forward, spread, 20.0f, damage, 3.0f );
