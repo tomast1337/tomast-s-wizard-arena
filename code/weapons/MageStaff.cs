@@ -40,25 +40,28 @@ namespace Tomast1337
 
 		private void ProcessSlotstButtons()
 		{
-			if ( Input.Pressed( InputButton.Slot1 ) ) {
-				processCurrentPower();
+			if ( Input.Pressed( InputButton.Slot1 ) )
+			{
 				Fire = !Fire;
+				processCurrentPower();
 			}
 				
-			if ( Input.Pressed( InputButton.Slot2 ) ) {
-				processCurrentPower();
+			if ( Input.Pressed( InputButton.Slot2 ) )
+			{
 				Earth = !Earth;
+				processCurrentPower();
 			}
 				
-			if ( Input.Pressed( InputButton.Slot3 ) ) {
-				processCurrentPower();
+			if ( Input.Pressed( InputButton.Slot3 ) ) 
+			{
 				Lightning = !Lightning;
+				processCurrentPower();
 			}
 				
 			if ( Input.Pressed( InputButton.Slot4 ) )
 			{
-				processCurrentPower();
 				Life = !Life;
+				processCurrentPower();
 			}
 				
 		}
@@ -114,13 +117,11 @@ namespace Tomast1337
 		
 		public override void AttackPrimary()
 		{
-			Log.Info( $"Pew {selectedAttack}" );
 			processAttack(true);
 		}
 		
 		public override void AttackSecondary()
 		{
-			Log.Info( "Pow" );
 			processAttack( false );
 		}
 		
@@ -217,7 +218,7 @@ namespace Tomast1337
 
 		private void StoneSMG( bool isPrimary )
 		{
-
+			
 		}
 
 		private void StoneShotgun( bool isPrimary )
