@@ -3,7 +3,9 @@ namespace Tomast1337 {
 	public partial class Game : Sandbox.Game
 	{
 		public Game(){
-			if(IsServer){
+			Precache.Add( "weapons/rust_pistol/rust_pistol.vmdl" );
+
+			if (IsServer){
 				Log.Info( "Created in Serverside" );
 				new WizzadHudEntity();
 			}
