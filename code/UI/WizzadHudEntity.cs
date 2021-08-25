@@ -12,7 +12,7 @@ namespace Tomast1337
 				return;
 			Singleton = this;
 
-			RootPanel.StyleSheet.Load( "/Hud.scss" );
+			RootPanel.StyleSheet.Load( "/UI/Hud.scss" );
 
 			RootPanel.AddChild<NameTags>();
 			RootPanel.AddChild<CrosshairCanvas>();
