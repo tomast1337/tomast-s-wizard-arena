@@ -11,6 +11,11 @@ namespace Tomast1337
 		public bool Life { get; set; } = false;
 		public float Mana { get; set; } = 100;
 
+		public override float PrimaryRate => 1 / 1.5f;
+		public override float SecondaryRate => 2f;
+
+		int selectedAttack = 0;
+
 		public override string ViewModelPath => "weapons/rust_pumpshotgun/v_rust_pumpshotgun.vmdl";
 
 		public override void Reload() { }
@@ -23,26 +28,41 @@ namespace Tomast1337
 			SetModel( "weapons/rust_pumpshotgun/rust_pumpshotgun.vmdl" );
 			Log.Info( "Staff added" );
 		}
-		public override void AttackPrimary()
+
+		private void processCurrentPower()
 		{
-			Log.Info( "Pow" );
+			selectedAttack = 0;
+			if ( Fire ) selectedAttack += 1;
+			if ( Earth ) selectedAttack += 2;
+			if ( Lightning ) selectedAttack += 4;
+			if ( Life ) selectedAttack += 8;
 		}
 
-		public override void AttackSecondary()
-		{
-			Log.Info( "Pew" );
-		}
 		private void ProcessSlotstButtons()
 		{
-			if ( Input.Pressed( InputButton.Slot1 ) )
+			if ( Input.Pressed( InputButton.Slot1 ) ) {
+				processCurrentPower();
 				Fire = !Fire;
-			if ( Input.Pressed( InputButton.Slot2 ) )
+			}
+				
+			if ( Input.Pressed( InputButton.Slot2 ) ) {
+				processCurrentPower();
 				Earth = !Earth;
-			if ( Input.Pressed( InputButton.Slot3 ) )
+			}
+				
+			if ( Input.Pressed( InputButton.Slot3 ) ) {
+				processCurrentPower();
 				Lightning = !Lightning;
+			}
+				
 			if ( Input.Pressed( InputButton.Slot4 ) )
+			{
+				processCurrentPower();
 				Life = !Life;
+			}
+				
 		}
+		
 		private void ProcessMana()
 		{
 			if ( Mana > 100 )
@@ -52,21 +72,67 @@ namespace Tomast1337
 			if ( Mana < 100 )
 				Mana += .008f;
 		}
-		private void processAttack()
+		
+		public override bool CanPrimaryAttack()
 		{
-			int attackSum = 0;
-			if ( Fire ) attackSum += 1;
-			if ( Earth ) attackSum += 2;
-			if ( Lightning ) attackSum += 4;
-			if ( Life ) attackSum += 8;
+			if ( Owner.Health <= 0 )
+				return false;
 
-			switch ( attackSum )
+			return base.CanPrimaryAttack();
+		}
+		
+		public override bool CanSecondaryAttack()
+		{
+			if ( Owner.Health <= 0 )
+				return false;
+
+			return base.CanSecondaryAttack();
+		}
+		
+		public virtual void ShootBullet( Vector3 pos, Vector3 dir, float spread, float force, float damage, float bulletSize )
+		{
+			var forward = dir;
+			forward += (Vector3.Random + Vector3.Random + Vector3.Random + Vector3.Random) * spread * 0.25f;
+			forward = forward.Normal;
+			foreach ( var tr in TraceBullet( pos, pos + forward * 5000, bulletSize ) )
+			{
+				tr.Surface.DoBulletImpact( tr );
+
+				if ( !IsServer ) continue;
+				if ( !tr.Entity.IsValid() ) continue;
+				using ( Prediction.Off() )
+				{
+					var damageInfo = DamageInfo.FromBullet( tr.EndPos, forward * 100 * force, damage )
+						.UsingTraceResult( tr )
+						.WithAttacker( Owner )
+						.WithWeapon( this );
+
+					tr.Entity.TakeDamage( damageInfo );
+				}
+			}
+		}
+		
+		public override void AttackPrimary()
+		{
+			Log.Info( $"Pew {selectedAttack}" );
+			processAttack(true);
+		}
+		
+		public override void AttackSecondary()
+		{
+			Log.Info( "Pow" );
+			processAttack( false );
+		}
+		
+		private void processAttack(bool isPrimary)
+		{
+			switch ( selectedAttack )
 			{
 				case 0:// Base -> wind gust
 					WindGust();
 					break;
 				case 1:// Fire -> flame thrower
-					Flamethrower();
+					Flamethrower( isPrimary );
 					break;
 				case 2:// Earth -> rock boulder
 					Rockboulder();
@@ -81,10 +147,10 @@ namespace Tomast1337
 					LaserShot();
 					break;
 				case 6:// Earth Lightning -> Fast rocks shots, Submachine gun like
-					StoneSMG();
+					StoneSMG( isPrimary );
 					break;
 				case 7:// Fire Earth Lightning -> muliple rocks shots, Shotgun like
-					StoneShotgun();
+					StoneShotgun( isPrimary );
 					break;
 				case 8:// Life -> heal
 					Heal();
@@ -115,12 +181,16 @@ namespace Tomast1337
 			}
 		}
 
+		void creatPushSphere() { 
+		
+		}
+
 		private void WindGust()
 		{
 
 		}
 
-		private void Flamethrower()
+		private void Flamethrower( bool isPrimary )
 		{
 
 		}
@@ -145,14 +215,37 @@ namespace Tomast1337
 
 		}
 
-		private void StoneSMG()
+		private void StoneSMG( bool isPrimary )
 		{
 
 		}
 
-		private void StoneShotgun()
+		private void StoneShotgun( bool isPrimary )
 		{
-
+			//TODO play sound ,animation and particle system
+			int quant = 8;
+			float damage = 9.0f;
+			float spread = .2f;
+			float KnockbackPower = 500f;
+			if ( !isPrimary )
+			{
+				quant = 16;
+				damage = 7.0f;
+				spread = .8f;
+				
+				TimeSinceSecondaryAttack = -0.7f;
+				TimeSincePrimaryAttack = -2;
+				KnockbackPower = 600;
+			}
+			else
+			{
+				TimeSincePrimaryAttack = 0.5f;
+				TimeSinceSecondaryAttack = 1.9f;
+			}
+			for ( int i = 0; i < quant; i++ ){
+				ShootBullet( Owner.EyePos, Owner.EyeRot.Forward, spread, 20.0f, damage, 3.0f );
+			}
+			Owner.Velocity += -Owner.EyeRot.Forward * KnockbackPower; //Knockback
 		}
 
 		private void Heal()
@@ -193,14 +286,20 @@ namespace Tomast1337
 		private void Suicide()
 		{
 			Vector3 location = Owner.Position;
+			float factor = 3 * Mana / 4;
+			createExplosion( location, factor, factor );
 		}
+		public void createExplosion( Vector3 position, float size, float power) {
+		
+		
+		}
+		
 		public override void Simulate( Client player )
 		{
 			base.Simulate( player );
 			ProcessMana();
 			ProcessSlotstButtons();
-			processAttack();
-
+			//Log.Info( attackSum );
 		}
 	}
 }
