@@ -3,7 +3,7 @@ namespace Tomast1337 {
 	public partial class Game : Sandbox.Game
 	{
 		public Game(){
-			Precache.Add( "weapons/rust_pistol/rust_pistol.vmdl" );
+			Precache.Add( "weapons/rust_pumpshotgun/rust_pumpshotgun.vmdl" );
 
 			if (IsServer){
 				Log.Info( "Created in Serverside" );

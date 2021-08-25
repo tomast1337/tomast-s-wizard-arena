@@ -11,7 +11,7 @@ namespace Tomast1337
 		public bool Life { get; set; } = false;
 		public float Mana { get; set; } = 100;
 
-		public override string ViewModelPath => "weapons/rust_pistol/v_rust_pistol.vmdl";
+		public override string ViewModelPath => "weapons/rust_pumpshotgun/v_rust_pumpshotgun.vmdl";
 
 		public override void Reload() { }
 
@@ -20,7 +20,7 @@ namespace Tomast1337
 			base.Spawn();
 			CollisionGroup = CollisionGroup.Weapon;
 			SetInteractsAs( CollisionLayer.Debris );
-			SetModel( "weapons/rust_pistol/rust_pistol.vmdl" );
+			SetModel( "weapons/rust_pumpshotgun/rust_pumpshotgun.vmdl" );
 			Log.Info( "Staff added" );
 		}
 		public override void AttackPrimary()
