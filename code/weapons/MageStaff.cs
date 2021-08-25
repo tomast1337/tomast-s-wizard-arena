@@ -219,6 +219,19 @@ namespace Tomast1337
 		private void StoneSMG( bool isPrimary )
 		{
 			
+			float damage = 3.0f;
+			float spread = .1f;
+			if ( !isPrimary )
+			{
+				spread = 0.02f;
+				TimeSinceSecondaryAttack = -1f; // Slow fire rate
+				TimeSincePrimaryAttack = .35697f; // penalty for changinf fire type
+			}
+			else {
+				TimeSinceSecondaryAttack = -0.2f; // penalty for changing fire type
+				TimeSincePrimaryAttack = 1.35697f; // Fast fire rate
+			}
+			ShootBullet( Owner.EyePos, Owner.EyeRot.Forward, spread, 20.0f, damage, 3.0f );
 		}
 
 		private void StoneShotgun( bool isPrimary )
@@ -227,7 +240,7 @@ namespace Tomast1337
 			int quant = 8;
 			float damage = 9.0f;
 			float spread = .2f;
-			float KnockbackPower = 500f;
+			float KnockbackPower = 280f;
 			if ( !isPrimary )
 			{
 				quant = 16;
@@ -235,13 +248,13 @@ namespace Tomast1337
 				spread = .8f;
 				KnockbackPower = 600;
 
-				TimeSinceSecondaryAttack = -0.7f;
-				TimeSincePrimaryAttack = 1;
+				TimeSinceSecondaryAttack = -1f; // Slow fire rate
+				TimeSincePrimaryAttack = 1;  // penalty for changing fire type
 			}
-			else
-			{
-				TimeSincePrimaryAttack = 0.5f;
-				TimeSinceSecondaryAttack = -1.9f;
+			else {
+			
+				TimeSinceSecondaryAttack = -1.9f; // penalty for changing fire type
+				TimeSincePrimaryAttack = 0.5f; // Not so slow fire rate 
 			}
 			for ( int i = 0; i < quant; i++ ){
 				ShootBullet( Owner.EyePos, Owner.EyeRot.Forward, spread, 20.0f, damage, 3.0f );
