@@ -5,11 +5,6 @@ namespace Tomast1337
 {
 	public partial class WizzardPlayer : Player
 	{
-		public float Mana { get; set; } = 100;
-		public bool Fire { get; set; } = false;
-		public bool Earth { get; set; } = false;
-		public bool Lightning { get; set; } = false;
-		public bool Life { get; set; } = false;
 		private DamageInfo lastDamage;
 		public WizzardPlayer()
 		{
@@ -26,7 +21,7 @@ namespace Tomast1337
 		}
 		public override void Respawn()
 		{
-			Mana = 100;
+
 			SetModel( "models/citizen/citizen.vmdl" );
 
 			Controller = new WizzadWalkController();
@@ -49,8 +44,8 @@ namespace Tomast1337
 			Dress( "models/citizen_clothes/trousers/trousers.jeans.vmdl" );
 			//Feet
 			Dress( "models/citizen_clothes/shoes/shoes.workboots.vmdl" );
-
-			Inventory.Add( new MageStaff(), true );
+			
+			Inventory.Add( Library.Create<Entity>( "weapon_magestaff" ), true );
 
 			base.Respawn();
 		}
@@ -158,33 +153,10 @@ namespace Tomast1337
 			EnableDrawing = false;
 			Inventory.DeleteContents();
 		}
-		private void ProcessSlotstButtons() {
-			if ( Input.Pressed( InputButton.Slot1 ) )
-				Fire = !Fire;
-			if ( Input.Pressed( InputButton.Slot2 ) )
-				Earth = !Earth;
-			if ( Input.Pressed( InputButton.Slot3 ) )
-				Lightning = !Lightning;
-			if ( Input.Pressed( InputButton.Slot4 ) )
-				Life = !Life;
-		}
-		private void ProcessMana() {
-			if ( Mana > 100 )
-				Mana = 100;
-			if ( Mana < 0 )
-				Mana = 0;
-			if ( Mana < 100 )
-				Mana += .005f;
-		}
 		public override void Simulate( Client cl )
 		{
+			SimulateActiveChild( cl, ActiveChild );
 			base.Simulate( cl );
-
-			ProcessSlotstButtons();
-			
-			ProcessMana();
-			
-			processAttack();
 		}
 	}
 }
