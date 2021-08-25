@@ -2,8 +2,9 @@
 
 namespace Tomast1337
 {
-	public class WizzadWalkController : WalkController {
-		public float Stamina { get; set; } = 0;
+	[Library]
+	public partial class WizzadWalkController : WalkController {
+		[Net, Predicted] public float Stamina { get; set; } = 0;
 		public WizzadWalkController() {
 			AirAcceleration = 500.0f;
 			AutoJump = true;
@@ -69,7 +70,7 @@ namespace Tomast1337
 			if ( ws >= 0 ) return ws;
 			if ( Input.Down( InputButton.Run ) && Stamina > 0 ) {
 				if ( !Input.Down( InputButton.Jump ) && Velocity != Vector3.Zero)
-					Stamina -= 0.25f;
+					Stamina -= 0.012f;
 				return SprintSpeed;
 			} 
 			if ( Input.Down( InputButton.Walk )) return WalkSpeed;
