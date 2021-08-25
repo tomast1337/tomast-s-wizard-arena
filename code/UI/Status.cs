@@ -22,13 +22,17 @@ namespace Tomast1337
 			WizzardPlayer player = (WizzardPlayer) Local.Pawn;
 			if ( player == null )
 				return;
+			
+			var activeWeapon = player.ActiveChild as MageStaff;
+			if ( activeWeapon == null )
+				return;
 
 			if ( Style.Display != DisplayMode.Flex )
 			{
 				Style.Display = DisplayMode.Flex;
 				Style.Dirty();
 			}
-			var activeWeapon = player.ActiveChild as MageStaff;
+			
 			WizzadWalkController wwC = (WizzadWalkController)player.Controller;
 			HealthLabel.Text = $"🩸{player.Health}";
 			ManaLabel.Text = $"🔮{activeWeapon.Mana:0}";

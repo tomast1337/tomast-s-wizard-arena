@@ -45,6 +45,8 @@ namespace Tomast1337
 
 			WizzardPlayer player = (WizzardPlayer)Client.Pawn;
 			var activeWeapon = player.ActiveChild as MageStaff;
+			if ( activeWeapon == null )
+				return;
 			//Special jump
 			if ( Input.Down( InputButton.Run ) && Stamina > 6.4f && activeWeapon.Mana > 1.2f)
 			{				

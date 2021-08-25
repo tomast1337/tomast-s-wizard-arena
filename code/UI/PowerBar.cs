@@ -29,6 +29,9 @@ namespace Tomast1337 {
 			if ( player == null)
 				return;
 			var activeWeapon = player.ActiveChild as MageStaff;
+			if ( activeWeapon == null )
+				return;
+
 
 			if ( activeWeapon.Fire )
 				FireLabel.Style.Set( "text-shadow", "5px 5px 10px orange, -5px -5px 10px red" );
