@@ -2,7 +2,8 @@
 
 namespace Tomast1337
 {
-	partial class MageStaff : BaseCarriable
+	[Library( "weapon_magestaff", Title = "MageStaff") ]
+	public partial class MageStaff : BaseWeapon
 	{
 
 		public override void Spawn()
@@ -15,26 +16,28 @@ namespace Tomast1337
 		public override void Simulate( Client player )
 		{
 			base.Simulate( player );
+			WizzardPlayer playerEnt = (WizzardPlayer)Local.Pawn;
+
 
 		}
 
-		public void AttackPrimary()
+		public override void AttackPrimary()
 		{
 			Log.Info( "Pew" );
 		}
-		public void AttackSecondary()
+		public override void AttackSecondary()
 		{
 
 			Log.Info( "Pew" );
 		}
 
-		private void processAttack(bool Fire, bool Earth, bool Lightning, bool Life )
+		private void processAttack( WizzardPlayer playerEnt )
 		{
 			int attackSum = 0;
-			if ( Fire ) attackSum += 1;
-			if ( Earth ) attackSum += 2;
-			if ( Lightning ) attackSum += 4;
-			if ( Life ) attackSum += 8;
+			if ( playerEnt.Fire ) attackSum += 1;
+			if ( playerEnt.Earth ) attackSum += 2;
+			if ( playerEnt.Lightning ) attackSum += 4;
+			if ( playerEnt.Life ) attackSum += 8;
 			switch ( attackSum )
 			{
 				case 0:// Base -> wind gust
