@@ -43,10 +43,10 @@ namespace Tomast1337
 			
 			Velocity = Velocity.WithZ( startz + flMul * flGroundFactor );
 
-
 			WizzardPlayer player = (WizzardPlayer)Client.Pawn;
+			var activeWeapon = player.ActiveChild as MageStaff;
 			//Special jump
-			if ( Input.Down( InputButton.Run ) && Stamina > 6.4f && player.Mana > 1.2f)
+			if ( Input.Down( InputButton.Run ) && Stamina > 6.4f && activeWeapon.Mana > 1.2f)
 			{				
 				float horizontalVelocity = new Vector3( Velocity.x, Velocity.y, 0 ).Length;
 				float maximunHV = 700;
@@ -55,7 +55,7 @@ namespace Tomast1337
 										 horizontalVelocity > maximunHV ? maximunHV : horizontalVelocity );
 
 				Stamina -= 6.4f;
-				player.Mana -= 5f;
+				activeWeapon.Mana -= 5f;
 			}
 			Velocity -= new Vector3( 0, 0, Gravity * 0.5f ) * Time.Delta;
 

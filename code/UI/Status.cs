@@ -28,10 +28,10 @@ namespace Tomast1337
 				Style.Display = DisplayMode.Flex;
 				Style.Dirty();
 			}
-
+			var activeWeapon = player.ActiveChild as MageStaff;
 			WizzadWalkController wwC = (WizzadWalkController)player.Controller;
 			HealthLabel.Text = $"🩸{player.Health}";
-			ManaLabel.Text = $"🔮{player.Mana:0}";
+			ManaLabel.Text = $"🔮{activeWeapon.Mana:0}";
 			StaminaLabel.Text = $"💪{(wwC == null?0:( int)wwC.Stamina):0}";
 		}
 	}
