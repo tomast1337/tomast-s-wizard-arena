@@ -158,7 +158,6 @@ namespace Tomast1337
 			EnableDrawing = false;
 			Inventory.DeleteContents();
 		}
-
 		private void ProcessSlotstButtons() {
 			if ( Input.Pressed( InputButton.Slot1 ) )
 				Fire = !Fire;
@@ -176,65 +175,6 @@ namespace Tomast1337
 				Mana = 0;
 			if ( Mana < 100 )
 				Mana += .005f;
-		}
-		private void processAttack() {
-			int attackSum = 0;
-			if ( Fire ) attackSum+=1;
-			if ( Earth ) attackSum+=2;
-			if ( Lightning ) attackSum+=4;
-			if ( Life ) attackSum+=8;
-			switch ( attackSum ) {
-				case 0:// Base -> wind gust
-
-					break;
-				case 1:// Fire -> flame thrower
-
-					break;
-				case 2:// Earth -> rock boulder
-
-					break;
-				case 3:// Fire Earth -> meteor
-
-					break;
-				case 4:// Lightning -> Lightning strike
-
-					break;
-				case 5:// Fire Lightning -> Laser shot
-
-					break;
-				case 6:// Earth Lightning -> Fast rocks shots, Submachine gun like
-
-					break;
-				case 7:// Fire Earth Lightning -> muliple rocks shots, Shotgun like
-
-					break;
-				case 8:// Life -> heal
-
-					break;
-				case 9:// Fire Life -> flame shild
-
-					break;
-				case 10:// Earth Life -> Rock Wall
-
-					break;
-				case 11:// Fire Earth Life -> Fire wall
-
-					break;
-				case 12:// Lightning Life -> force field
-
-					break;
-				case 13:// Fire Lightning Life -> Vampirism Shot, Awp like , Hit or die
-
-					break;
-				case 14:// Earth Lightning Life -> Tree Spawn
-
-					break;
-				case 15:// Fire Earth Lightning Life -> suicide explosion
-
-					break;
-				default:
-					break;
-			}
 		}
 		public override void Simulate( Client cl )
 		{
