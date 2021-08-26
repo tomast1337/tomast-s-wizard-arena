@@ -51,7 +51,7 @@ namespace Tomast1337
 			if ( Input.Down( InputButton.Run ) && Stamina > 6.4f && activeWeapon.Mana > 1.2f)
 			{				
 				float horizontalVelocity = new Vector3( Velocity.x, Velocity.y, 0 ).Length;
-				float maximunHV = 700;
+				float maximunHV = 400;
 				Velocity += new Vector3( Velocity.x/4,
 										 Velocity.y/4,
 										 horizontalVelocity > maximunHV ? maximunHV : horizontalVelocity );
