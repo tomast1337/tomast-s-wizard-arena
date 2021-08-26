@@ -188,12 +188,24 @@ namespace Tomast1337
 
 		private void WindGust()
 		{
-
+			Owner.Velocity += Owner.EyeRot.Forward * 800; //Knockback
+			TimeSinceSecondaryAttack = -1f; // Slow fire rate
+			TimeSincePrimaryAttack = -1f; // Slow fire rate
 		}
 
 		private void Flamethrower( bool isPrimary )
 		{
-
+			if ( !isPrimary )
+			{
+				TimeSinceSecondaryAttack = -1f; // Slow fire rate
+				TimeSincePrimaryAttack = .35697f; // penalty for changinf fire type
+			}
+			else
+			{
+				TimeSinceSecondaryAttack = -0.2f; // penalty for changing fire type
+				TimeSincePrimaryAttack = 1.5f; // Fast fire rate
+			}
+			var flame = Particles.Create( "particles/flame.vpcf", this.Position + Owner.EyeRot.Forward ) ;
 		}
 
 		private void Rockboulder()
@@ -264,7 +276,7 @@ namespace Tomast1337
 
 		private void Heal()
 		{
-
+			TimeSinceSecondaryAttack = -1f; // Slow fire rate
 		}
 
 		private void FlameShield()
@@ -304,8 +316,10 @@ namespace Tomast1337
 			createExplosion( location, factor, factor );
 		}
 		public void createExplosion( Vector3 position, float size, float power) {
-		
-		
+			using ( Prediction.Off() )
+			{
+				Particles.Create( "particles/explosion.vpcf", position );
+			}
 		}
 		
 		public override void Simulate( Client player )
