@@ -5,3 +5,6 @@ code/Properties/launchSettings.json
 tools_asset_info.bin
 _bakeresourcecache
 tools_thumbnail_cache.bin
+*.los
+*.vpk
+*.vpcf_c
