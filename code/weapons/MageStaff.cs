@@ -130,22 +130,22 @@ namespace Tomast1337
 			switch ( selectedAttack )
 			{
 				case 0:// Base -> wind gust
-					WindGust();
+					WindGust( isPrimary );
 					break;
 				case 1:// Fire -> flame thrower
 					Flamethrower( isPrimary );
 					break;
 				case 2:// Earth -> rock boulder
-					Rockboulder();
+					Rockboulder( isPrimary );
 					break;
 				case 3:// Fire Earth -> meteor
-					Meteor();
+					Meteor( isPrimary );
 					break;
 				case 4:// Lightning -> Lightning strike
-					Lightningstrike();
+					Lightningstrike( isPrimary );
 					break;
 				case 5:// Fire Lightning -> Laser shot
-					LaserShot();
+					LaserShot( isPrimary );
 					break;
 				case 6:// Earth Lightning -> Fast rocks shots, Submachine gun like
 					StoneSMG( isPrimary );
@@ -154,28 +154,28 @@ namespace Tomast1337
 					StoneShotgun( isPrimary );
 					break;
 				case 8:// Life -> heal
-					Heal();
+					Heal( isPrimary );
 					break;
 				case 9:// Fire Life -> flame shield
-					FlameShield();
+					FlameShield( isPrimary );
 					break;
 				case 10:// Earth Life -> Rock Wall
-					RockWall();
+					RockWall( isPrimary );
 					break;
 				case 11:// Fire Earth Life -> Fire wall
-					FireWall();
+					FireWall( isPrimary );
 					break;
 				case 12:// Lightning Life -> force field
-					ForceField();
+					ForceField( isPrimary );
 					break;
 				case 13:// Fire Lightning Life -> Vampirism Shot, Awp like , Hit or die
-					VampirismShot();
+					VampirismShot( isPrimary );
 					break;
 				case 14:// Earth Lightning Life -> Tree Spawn
-					Tree();
+					Tree( isPrimary );
 					break;
 				case 15:// Fire Earth Lightning Life -> suicide explosion
-					Suicide();
+					Suicide( isPrimary );
 					break;
 				default:
 					break;
@@ -186,11 +186,19 @@ namespace Tomast1337
 		
 		}
 
-		private void WindGust()
+		private void WindGust( bool isPrimary )
 		{
-			Owner.Velocity += Owner.EyeRot.Forward * 800; //Knockback
-			TimeSinceSecondaryAttack = -1f; // Slow fire rate
-			TimeSincePrimaryAttack = -1f; // Slow fire rate
+			if ( isPrimary )
+			{
+				TimeSinceSecondaryAttack = -1f; // Slow fire rate
+				TimeSincePrimaryAttack = -1f; // Slow fire rate
+			}
+			else {
+				Owner.Velocity += Owner.EyeRot.Forward * 800; //Knockback
+				TimeSinceSecondaryAttack = -1f; // Slow fire rate
+				TimeSincePrimaryAttack = -1f; // Slow fire rate
+			}
+			
 		}
 
 		private void Flamethrower( bool isPrimary )
@@ -205,25 +213,37 @@ namespace Tomast1337
 				TimeSinceSecondaryAttack = -0.2f; // penalty for changing fire type
 				TimeSincePrimaryAttack = 1.5f; // Fast fire rate
 			}
-			var flame = Particles.Create( "particles/flame.vpcf", this.Position + Owner.EyeRot.Forward ) ;
+			var flame = Particles.Create( "particles/flame.vpcf", Owner.EyePos + Owner.EyeRot.Forward * 40 ) ;
+			flame.SetForward( 1, Owner.EyeRot.Forward * 40 );
 		}
 
-		private void Rockboulder()
+		void lauchProp( string model, float force )
+		{
+			var prop = new ModelEntity();
+			prop.SetModel( model );
+			prop.Position = Owner.EyePos + Owner.EyeRot.Forward * 40;
+			prop.Rotation = Rotation.LookAt( Vector3.Random.Normal );
+			prop.SetupPhysicsFromModel( PhysicsMotionType.Dynamic, false );
+			prop.PhysicsGroup.Velocity = Owner.EyeRot.Forward * force;
+			prop.DeleteAsync( 10 );
+		}
+
+		private void Rockboulder( bool isPrimary )
+		{
+			lauchProp( "models/rust_props/wooden_crates/wooden_crate_a.vmdl_c", 1000 );
+		}
+
+		private void Meteor( bool isPrimary )
+		{
+			lauchProp( "models/citizen/citizen.vmdl", 1000 );
+		}
+
+		private void Lightningstrike( bool isPrimary )
 		{
 
 		}
 
-		private void Meteor()
-		{
-
-		}
-
-		private void Lightningstrike()
-		{
-
-		}
-
-		private void LaserShot()
+		private void LaserShot( bool isPrimary )
 		{
 
 		}
@@ -235,6 +255,7 @@ namespace Tomast1337
 			float spread = .1f;
 			if ( !isPrimary )
 			{
+				damage = 5.0f;
 				spread = 0.02f;
 				TimeSinceSecondaryAttack = -1f; // Slow fire rate
 				TimeSincePrimaryAttack = .35697f; // penalty for changinf fire type
@@ -250,13 +271,13 @@ namespace Tomast1337
 		{
 			//TODO play sound ,animation and particle system
 			int quant = 8;
-			float damage = 9.0f;
+			float damage = 3f;
 			float spread = .2f;
 			float KnockbackPower = 280f;
 			if ( !isPrimary )
 			{
 				quant = 16;
-				damage = 7.0f;
+				damage = 2f;
 				spread = .8f;
 				KnockbackPower = 600;
 
@@ -274,47 +295,48 @@ namespace Tomast1337
 			Owner.Velocity += -Owner.EyeRot.Forward * KnockbackPower; //Knockback
 		}
 
-		private void Heal()
+		private void Heal( bool isPrimary )
 		{
 			TimeSinceSecondaryAttack = -1f; // Slow fire rate
 		}
 
-		private void FlameShield()
+		private void FlameShield( bool isPrimary )
 		{
 
 		}
 
-		private void RockWall()
+		private void RockWall( bool isPrimary )
 		{
 
 		}
 
-		private void FireWall()
+		private void FireWall( bool isPrimary )
 		{
 
 		}
 
-		private void ForceField()
+		private void ForceField( bool isPrimary )
 		{
 
 		}
 
-		private void VampirismShot()
+		private void VampirismShot( bool isPrimary )
 		{
 
 		}
 
-		private void Tree()
+		private void Tree( bool isPrimary )
 		{
 
 		}
 
-		private void Suicide()
+		private void Suicide( bool isPrimary )
 		{
 			Vector3 location = Owner.Position;
 			float factor = 3 * Mana / 4;
 			createExplosion( location, factor, factor );
 		}
+		
 		public void createExplosion( Vector3 position, float size, float power) {
 			using ( Prediction.Off() )
 			{
