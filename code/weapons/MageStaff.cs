@@ -295,10 +295,20 @@ namespace Tomast1337
 			
 			float damage = 3.0f;
 			float spread = .1f;
+
+			float length = .5f;
+			float speed = 5.0f;
+			float size = .5f;
+
 			if ( !isPrimary )
 			{
 				damage = 5.0f;
 				spread = 0.02f;
+
+				length = .5f;
+				speed = 5.0f;
+				size = 3f;
+
 				TimeSinceSecondaryAttack = -1f; // Slow fire rate
 				TimeSincePrimaryAttack = .35697f; // penalty for changinf fire type
 			}
@@ -307,34 +317,56 @@ namespace Tomast1337
 				TimeSincePrimaryAttack = 1.35697f; // Fast fire rate
 			}
 			ShootBullet( Owner.EyePos, Owner.EyeRot.Forward, spread, 20.0f, damage, 3.0f );
+			
+			new Sandbox.ScreenShake.Perlin( length, speed, size );
 		}
 
 		private void StoneShotgun( bool isPrimary )
 		{
 			//TODO play sound ,animation and particle system
-			int quant = 8;
+			int quant = 10;
 			float damage = 3f;
-			float spread = .2f;
+			float spread = .1f;
 			float KnockbackPower = 280f;
+			float force = 10;
+
+			float length = 1.0f;
+			float speed = 1.5f; 
+			float size = 2.0f;
+
+
 			if ( !isPrimary )
 			{
-				quant = 16;
+				quant = 20;
 				damage = 2f;
-				spread = .8f;
+				spread = .4f;
 				KnockbackPower = 600;
+				force = 20f;
+
+				length = 3.0f;
+				speed = 3.0f;
+				size = 3.0f;
 
 				TimeSinceSecondaryAttack = -1f; // Slow fire rate
 				TimeSincePrimaryAttack = 1;  // penalty for changing fire type
 			}
+			
 			else {
 			
 				TimeSinceSecondaryAttack = -1.9f; // penalty for changing fire type
 				TimeSincePrimaryAttack = 0.5f; // Not so slow fire rate 
 			}
+			
 			for ( int i = 0; i < quant; i++ ){
-				ShootBullet( Owner.EyePos, Owner.EyeRot.Forward, spread, 40.0f, damage, 3.0f );
+				ShootBullet( Owner.EyePos, Owner.EyeRot.Forward, spread, force, damage, 3.0f );
 			}
+
 			Owner.Velocity += -Owner.EyeRot.Forward * KnockbackPower; //Knockback
+
+			if ( IsLocalPawn )
+			{
+				new Sandbox.ScreenShake.Perlin( length, speed, size );
+			}
 		}
 
 		private void Heal( bool isPrimary )
