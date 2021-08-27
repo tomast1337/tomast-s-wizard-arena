@@ -11,6 +11,11 @@ namespace Tomast1337
 		public bool Life { get; set; } = false;
 		public float Mana { get; set; } = 100;
 
+		bool FlashlightOn = false;
+		protected virtual Vector3 LightOffset => Vector3.Forward * 10;
+		private SpotLightEntity worldLight;
+		private SpotLightEntity viewLight;
+
 		public override float PrimaryRate => 1 / 1.5f;
 		public override float SecondaryRate => 2f;
 
@@ -20,14 +25,51 @@ namespace Tomast1337
 
 		public override void Reload() { }
 
+		private SpotLightEntity CreateLight()
+		{
+			var light = new SpotLightEntity
+			{
+				Enabled = true,
+				DynamicShadows = true,
+				Range = 1024,
+				Falloff = 1.0f,
+				LinearAttenuation = 0.0f,
+				QuadraticAttenuation = 1.0f,
+				Brightness = 3,
+				Color = Color.White,
+				InnerConeAngle = 20,
+				OuterConeAngle = 40,
+				FogStength = 0.8f,
+				Owner = Owner,
+				LightCookie = Texture.Load( "materials/effects/lightcookie.vtex" )
+			};
+
+			return light;
+		}
+
 		public override void Spawn()
 		{
 			base.Spawn();
 			CollisionGroup = CollisionGroup.Weapon;
 			SetInteractsAs( CollisionLayer.Debris );
 			SetModel( "weapons/rust_pumpshotgun/rust_pumpshotgun.vmdl" );
-			Log.Info( "Staff added" );
+
+			worldLight = CreateLight();
+			worldLight.SetParent( this, "slide", new Transform( LightOffset ) );
+			worldLight.EnableHideInFirstPerson = true;
+			worldLight.Enabled = FlashlightOn;
 		}
+
+		public override void CreateViewModel()
+		{
+			base.CreateViewModel();
+
+			viewLight = CreateLight();
+			viewLight.SetParent( ViewModelEntity, "light", new Transform( LightOffset ) );
+			viewLight.EnableViewmodelRendering = true;
+			viewLight.Enabled = FlashlightOn;
+		}
+
 
 		private void processCurrentPower()
 		{
@@ -290,7 +332,7 @@ namespace Tomast1337
 				TimeSincePrimaryAttack = 0.5f; // Not so slow fire rate 
 			}
 			for ( int i = 0; i < quant; i++ ){
-				ShootBullet( Owner.EyePos, Owner.EyeRot.Forward, spread, 20.0f, damage, 3.0f );
+				ShootBullet( Owner.EyePos, Owner.EyeRot.Forward, spread, 40.0f, damage, 3.0f );
 			}
 			Owner.Velocity += -Owner.EyeRot.Forward * KnockbackPower; //Knockback
 		}
@@ -343,13 +385,26 @@ namespace Tomast1337
 				Particles.Create( "particles/explosion.vpcf", position );
 			}
 		}
-		
+
+		private void ProcessFlashlight() {
+			FlashlightOn = !FlashlightOn;
+			PlaySound( FlashlightOn ? "flashlight-on" : "flashlight-off" );
+			
+			if ( worldLight.IsValid() )
+				worldLight.Enabled = FlashlightOn;
+			if ( viewLight.IsValid() )
+				viewLight.Enabled = FlashlightOn;
+
+		}
+
 		public override void Simulate( Client player )
 		{
 			base.Simulate( player );
 			ProcessMana();
 			ProcessSlotstButtons();
-			//Log.Info( attackSum );
+			if ( Input.Pressed( InputButton.Flashlight ) ) {
+				ProcessFlashlight();
+			}
 		}
 	}
 }

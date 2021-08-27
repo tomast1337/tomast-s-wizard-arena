@@ -4,6 +4,7 @@ namespace Tomast1337 {
 	{
 		public Game(){
 			Precache.Add( "weapons/rust_pumpshotgun/rust_pumpshotgun.vmdl" );
+			Precache.Add( "materials/effects/lightcookie.vtex" );
 
 			if (IsServer){
 				Log.Info( "Created in Serverside" );
