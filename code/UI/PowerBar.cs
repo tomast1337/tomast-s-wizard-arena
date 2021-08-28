@@ -1,14 +1,17 @@
-﻿using Sandbox;
-using Sandbox.UI;
-using Sandbox.UI.Construct;
-
-namespace Tomast1337 {
+﻿namespace Tomast1337
+{
+	using Sandbox;
+	using Sandbox.UI;
+	using Sandbox.UI.Construct;
 
 	internal class PowerBar : Panel
 	{
 		public Label FireLabel;
+
 		public Label EarthLabel;
+
 		public Label LightningLabel;
+
 		public Label LifeLabel;
 
 		public PowerBar()
@@ -19,14 +22,14 @@ namespace Tomast1337 {
 			LifeLabel = Add.Label( "❤️", "lifeLabel" );
 
 			FireLabel.SetClass( "active", true );
-
 		}
+
 		public override void Tick()
 		{
 			base.Tick();
 
 			WizzardPlayer player = (WizzardPlayer)Local.Pawn;
-			if ( player == null)
+			if ( player == null )
 				return;
 			var activeWeapon = player.ActiveChild as MageStaff;
 			if ( activeWeapon == null )
