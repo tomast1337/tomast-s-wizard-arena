@@ -123,7 +123,7 @@
 			if ( Mana < 0 )
 				Mana = 0;
 			if ( Mana < 100 )
-				Mana += .008f;
+				Mana += .08f;
 		}
 
 		public override bool CanPrimaryAttack()
@@ -147,7 +147,7 @@
 			var forward = dir;
 			forward += (Vector3.Random + Vector3.Random + Vector3.Random + Vector3.Random) * spread * 0.25f;
 			forward = forward.Normal;
-			foreach ( var tr in TraceBullet( pos, pos + forward * 5000, bulletSize ) )
+			foreach ( var tr in TraceBullet( pos, pos + forward * 50000, bulletSize ) )
 			{
 				tr.Surface.DoBulletImpact( tr );
 
@@ -180,52 +180,68 @@
 			switch ( selectedAttack )
 			{
 				case 0:// Base -> wind gust
-					WindGust( isPrimary );
+					if(Mana > 0)
+						WindGust( isPrimary );
 					break;
 				case 1:// Fire -> flame thrower
-					Flamethrower( isPrimary );
+					if ( Mana > 0 )
+						Flamethrower( isPrimary );
 					break;
 				case 2:// Earth -> rock boulder
-					Rockboulder( isPrimary );
+					if ( Mana > 0 )
+						Rockboulder( isPrimary );
 					break;
 				case 3:// Fire Earth -> meteor
-					Meteor( isPrimary );
+					if ( Mana > 0 )
+						Meteor( isPrimary );
 					break;
 				case 4:// Lightning -> Lightning strike
-					Lightningstrike( isPrimary );
+					if ( Mana > 0 )
+						Lightningstrike( isPrimary );
 					break;
 				case 5:// Fire Lightning -> Laser shot
-					LaserShot( isPrimary );
+					if ( Mana > 0 )
+						LaserShot( isPrimary );
 					break;
 				case 6:// Earth Lightning -> Fast rocks shots, Submachine gun like
-					StoneSMG( isPrimary );
+					if ( Mana > 0 )
+						StoneSMG( isPrimary );
 					break;
 				case 7:// Fire Earth Lightning -> muliple rocks shots, Shotgun like
-					StoneShotgun( isPrimary );
+					if ( Mana > 0 )
+						StoneShotgun( isPrimary );
 					break;
 				case 8:// Life -> heal
-					Heal( isPrimary );
+					if ( Mana > 0 )
+						Heal( isPrimary );
 					break;
 				case 9:// Fire Life -> flame shield
-					FlameShield( isPrimary );
+					if ( Mana > 0 )
+						FlameShield( isPrimary );
 					break;
 				case 10:// Earth Life -> Rock Wall
-					RockWall( isPrimary );
+					if ( Mana > 0 )
+						RockWall( isPrimary );
 					break;
 				case 11:// Fire Earth Life -> Fire wall
-					FireWall( isPrimary );
+					if ( Mana > 0 )
+						FireWall( isPrimary );
 					break;
 				case 12:// Lightning Life -> force field
-					ForceField( isPrimary );
+					if ( Mana > 0 )
+						ForceField( isPrimary );
 					break;
 				case 13:// Fire Lightning Life -> Vampirism Shot, Awp like , Hit or die
-					VampirismShot( isPrimary );
+					if ( Mana > 0 )
+						VampirismShot( isPrimary );
 					break;
 				case 14:// Earth Lightning Life -> Tree Spawn
-					Tree( isPrimary );
+					if ( Mana > 0 )
+						Tree( isPrimary );
 					break;
 				case 15:// Fire Earth Lightning Life -> suicide explosion
-					Suicide( isPrimary );
+					if ( Mana > 0 )
+						Suicide( isPrimary );
 					break;
 				default:
 					break;
@@ -285,8 +301,6 @@
 					tr.Entity.TakeDamage( damageInfo );
 				}
 			}
-
-
 			Particles.Create( "particles/flame.vpcf", EffectEntity, "muzzle" );
 		}
 
@@ -327,6 +341,23 @@
 
 		private void LaserShot( bool isPrimary )
 		{
+			float damage = 3.0f;
+			float spread = .01f;
+			float force = 20.0f;
+
+
+			if ( !isPrimary )
+			{
+				TimeSinceSecondaryAttack = -1f; // Slow fire rate
+				TimeSincePrimaryAttack = .35697f; // penalty for changinf fire type
+			}
+			else
+			{
+				TimeSinceSecondaryAttack = -0.2f; // penalty for changing fire type
+				TimeSincePrimaryAttack = 1.5f; // Fast fire rate
+				
+			}
+			ShootBullet( Owner.EyePos, Owner.EyeRot.Forward, spread, force, damage, 3.0f );
 		}
 
 		private void StoneSMG( bool isPrimary )
