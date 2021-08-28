@@ -1,13 +1,14 @@
-﻿using Sandbox;
-using Sandbox.UI;
-
-namespace Tomast1337
+﻿namespace Tomast1337
 {
-	public partial class WizzadHudEntity:HudEntity<RootPanel>
+	using Sandbox;
+	using Sandbox.UI;
+
+	public partial class WizzadHudEntity : HudEntity<RootPanel>
 	{
 		public static WizzadHudEntity Singleton;
 
-		public WizzadHudEntity() {
+		public WizzadHudEntity()
+		{
 			if ( !IsClient )
 				return;
 			Singleton = this;
