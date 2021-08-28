@@ -1,28 +1,30 @@
-﻿using Sandbox;
-using Sandbox.UI;
-using Sandbox.UI.Construct;
-
-namespace Tomast1337
+﻿namespace Tomast1337
 {
-	
-	
-	public class Status:Panel
+	using Sandbox;
+	using Sandbox.UI;
+	using Sandbox.UI.Construct;
+
+	public class Status : Panel
 	{
 		public Label HealthLabel;
+
 		public Label ManaLabel;
+
 		public Label StaminaLabel;
+
 		public Status()
 		{
 			HealthLabel = Add.Label( "0", "healthLabel" );
 			ManaLabel = Add.Label( "0", "manaLabel" );
 			StaminaLabel = Add.Label( "0", "staminaLabel" );
 		}
+
 		public override void Tick()
 		{
-			WizzardPlayer player = (WizzardPlayer) Local.Pawn;
+			WizzardPlayer player = (WizzardPlayer)Local.Pawn;
 			if ( player == null )
 				return;
-			
+
 			var activeWeapon = player.ActiveChild as MageStaff;
 			if ( activeWeapon == null )
 				return;
@@ -32,11 +34,11 @@ namespace Tomast1337
 				Style.Display = DisplayMode.Flex;
 				Style.Dirty();
 			}
-			
+
 			WizzadWalkController wwC = (WizzadWalkController)player.Controller;
 			HealthLabel.Text = $"🩸{player.Health}";
 			ManaLabel.Text = $"🔮{activeWeapon.Mana:0}";
-			StaminaLabel.Text = $"💪{(wwC == null?0:( int)wwC.Stamina):0}";
+			StaminaLabel.Text = $"💪{(wwC == null ? 0 : (int)wwC.Stamina):0}";
 		}
 	}
 }
