@@ -1,16 +1,19 @@
-﻿using Sandbox;
-using System;
-
-namespace Tomast1337
+﻿namespace Tomast1337
 {
+	using Sandbox;
+	using System;
+
 	public partial class WizzardPlayer : Player
 	{
 		private DamageInfo lastDamage;
+
 		public WizzardPlayer()
 		{
 			Inventory = new BaseInventory( this );
 		}
-		public void Dress( String modelPath ) {
+
+		public void Dress( String modelPath )
+		{
 			ModelEntity clothe = new ModelEntity();
 
 			clothe.SetModel( modelPath );
@@ -19,6 +22,7 @@ namespace Tomast1337
 			clothe.EnableShadowInFirstPerson = true;
 			clothe.EnableHideInFirstPerson = true;
 		}
+
 		public override void Respawn()
 		{
 
@@ -44,12 +48,14 @@ namespace Tomast1337
 			Dress( "models/citizen_clothes/trousers/trousers.jeans.vmdl" );
 			//Feet
 			Dress( "models/citizen_clothes/shoes/shoes.workboots.vmdl" );
-			
+
 			Inventory.Add( Library.Create<Entity>( "weapon_magestaff" ), true );
 
 			base.Respawn();
 		}
-		private void spawnRagdoll( Vector3 velocity, DamageFlags damageFlags, Vector3 forcePos, Vector3 force, int bone ) {
+
+		private void spawnRagdoll( Vector3 velocity, DamageFlags damageFlags, Vector3 forcePos, Vector3 force, int bone )
+		{
 			ModelEntity ragdoll = new ModelEntity();
 			ragdoll.Position = Position;
 			ragdoll.Rotation = Rotation;
@@ -119,8 +125,8 @@ namespace Tomast1337
 			Corpse = ragdoll;
 
 			ragdoll.DeleteAsync( 30 );
-
 		}
+
 		public override void TakeDamage( DamageInfo info )
 		{
 			if ( GetHitboxGroup( info.HitboxIndex ) == 1 )
@@ -134,10 +140,12 @@ namespace Tomast1337
 
 			base.TakeDamage( info );
 		}
+
 		[ClientRpc]
 		public void TookDamage( DamageFlags damageFlags, Vector3 forcePos, Vector3 force )
 		{
 		}
+
 		public override void OnKilled()
 		{
 			base.OnKilled();
@@ -153,6 +161,7 @@ namespace Tomast1337
 			EnableDrawing = false;
 			Inventory.DeleteContents();
 		}
+
 		public override void Simulate( Client cl )
 		{
 			SimulateActiveChild( cl, ActiveChild );
