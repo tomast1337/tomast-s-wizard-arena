@@ -1,29 +1,39 @@
-﻿using Sandbox;
-
-namespace Tomast1337
+﻿namespace Tomast1337
 {
-	[Library( "weapon_magestaff", Title = "MageStaff", Spawnable = true) ]
+	using Sandbox;
+
+	[Library( "weapon_magestaff", Title = "MageStaff", Spawnable = true )]
 	public partial class MageStaff : BaseWeapon
 	{
 		public bool Fire { get; set; } = false;
+
 		public bool Earth { get; set; } = false;
+
 		public bool Lightning { get; set; } = false;
+
 		public bool Life { get; set; } = false;
+
 		public float Mana { get; set; } = 100;
 
 		bool FlashlightOn = false;
+
 		protected virtual Vector3 LightOffset => Vector3.Forward * 10;
+
 		private SpotLightEntity worldLight;
+
 		private SpotLightEntity viewLight;
 
 		public override float PrimaryRate => 1 / 1.5f;
+
 		public override float SecondaryRate => 2f;
 
 		int selectedAttack = 0;
 
 		public override string ViewModelPath => "weapons/rust_pumpshotgun/v_rust_pumpshotgun.vmdl";
 
-		public override void Reload() { }
+		public override void Reload()
+		{
+		}
 
 		private SpotLightEntity CreateLight()
 		{
@@ -70,7 +80,6 @@ namespace Tomast1337
 			viewLight.Enabled = FlashlightOn;
 		}
 
-
 		private void processCurrentPower()
 		{
 			selectedAttack = 0;
@@ -87,27 +96,26 @@ namespace Tomast1337
 				Fire = !Fire;
 				processCurrentPower();
 			}
-				
+
 			if ( Input.Pressed( InputButton.Slot2 ) )
 			{
 				Earth = !Earth;
 				processCurrentPower();
 			}
-				
-			if ( Input.Pressed( InputButton.Slot3 ) ) 
+
+			if ( Input.Pressed( InputButton.Slot3 ) )
 			{
 				Lightning = !Lightning;
 				processCurrentPower();
 			}
-				
+
 			if ( Input.Pressed( InputButton.Slot4 ) )
 			{
 				Life = !Life;
 				processCurrentPower();
 			}
-				
 		}
-		
+
 		private void ProcessMana()
 		{
 			if ( Mana > 100 )
@@ -117,7 +125,7 @@ namespace Tomast1337
 			if ( Mana < 100 )
 				Mana += .008f;
 		}
-		
+
 		public override bool CanPrimaryAttack()
 		{
 			if ( Owner.Health <= 0 )
@@ -125,7 +133,7 @@ namespace Tomast1337
 
 			return base.CanPrimaryAttack();
 		}
-		
+
 		public override bool CanSecondaryAttack()
 		{
 			if ( Owner.Health <= 0 )
@@ -133,7 +141,7 @@ namespace Tomast1337
 
 			return base.CanSecondaryAttack();
 		}
-		
+
 		public virtual void ShootBullet( Vector3 pos, Vector3 dir, float spread, float force, float damage, float bulletSize )
 		{
 			var forward = dir;
@@ -156,18 +164,18 @@ namespace Tomast1337
 				}
 			}
 		}
-		
+
 		public override void AttackPrimary()
 		{
-			processAttack(true);
+			processAttack( true );
 		}
-		
+
 		public override void AttackSecondary()
 		{
 			processAttack( false );
 		}
-		
-		private void processAttack(bool isPrimary)
+
+		private void processAttack( bool isPrimary )
 		{
 			switch ( selectedAttack )
 			{
@@ -224,8 +232,8 @@ namespace Tomast1337
 			}
 		}
 
-		void creatPushSphere() { 
-		
+		void creatPushSphere()
+		{
 		}
 
 		private void WindGust( bool isPrimary )
@@ -235,12 +243,12 @@ namespace Tomast1337
 				TimeSinceSecondaryAttack = -1f; // Slow fire rate
 				TimeSincePrimaryAttack = -1f; // Slow fire rate
 			}
-			else {
+			else
+			{
 				Owner.Velocity += Owner.EyeRot.Forward * 800; //Knockback
 				TimeSinceSecondaryAttack = -1f; // Slow fire rate
 				TimeSincePrimaryAttack = -1f; // Slow fire rate
 			}
-			
 		}
 
 		private void Flamethrower( bool isPrimary )
@@ -255,8 +263,31 @@ namespace Tomast1337
 				TimeSinceSecondaryAttack = -0.2f; // penalty for changing fire type
 				TimeSincePrimaryAttack = 1.5f; // Fast fire rate
 			}
-			var flame = Particles.Create( "particles/flame.vpcf", Owner.EyePos + Owner.EyeRot.Forward * 40 ) ;
-			flame.SetForward( 1, Owner.EyeRot.Forward * 40 );
+
+			var forward = Owner.EyeRot.Forward;
+			forward = forward.Normal;
+
+			foreach ( var tr in TraceBullet( Owner.EyePos, Owner.EyePos + forward * 250, 20.0f ) )
+			{
+				if ( !tr.Entity.IsValid() ) continue;
+
+				//tr.Surface.DoBulletImpact( tr );
+
+				if ( !IsServer ) continue;
+
+				using ( Prediction.Off() )
+				{
+					var damageInfo = DamageInfo.FromBullet( tr.EndPos, forward * 100, 1 )
+						.UsingTraceResult( tr )
+						.WithAttacker( Owner )
+						.WithWeapon( this );
+
+					tr.Entity.TakeDamage( damageInfo );
+				}
+			}
+
+
+			Particles.Create( "particles/flame.vpcf", EffectEntity, "muzzle" );
 		}
 
 		void lauchProp( string model, float force )
@@ -282,17 +313,25 @@ namespace Tomast1337
 
 		private void Lightningstrike( bool isPrimary )
 		{
+			if ( !isPrimary )
+			{
 
+			}
+			else
+			{
+				TimeSinceSecondaryAttack = -1f;
+				ShootBullet( Owner.EyePos, Owner.EyeRot.Forward, .1f, 20.0f, 50, 3.0f );
+				new Sandbox.ScreenShake.Random( 0.1f, 1, 1 );
+			}
 		}
 
 		private void LaserShot( bool isPrimary )
 		{
-
 		}
 
 		private void StoneSMG( bool isPrimary )
 		{
-			
+
 			float damage = 3.0f;
 			float spread = .1f;
 
@@ -312,18 +351,18 @@ namespace Tomast1337
 				TimeSinceSecondaryAttack = -1f; // Slow fire rate
 				TimeSincePrimaryAttack = .35697f; // penalty for changinf fire type
 			}
-			else {
+			else
+			{
 				TimeSinceSecondaryAttack = -0.2f; // penalty for changing fire type
 				TimeSincePrimaryAttack = 1.35697f; // Fast fire rate
 			}
 			ShootBullet( Owner.EyePos, Owner.EyeRot.Forward, spread, 20.0f, damage, 3.0f );
-			
+
 			new Sandbox.ScreenShake.Perlin( length, speed, size );
 		}
 
 		private void StoneShotgun( bool isPrimary )
 		{
-			//TODO play sound ,animation and particle system
 			int quant = 10;
 			float damage = 3f;
 			float spread = .1f;
@@ -331,7 +370,7 @@ namespace Tomast1337
 			float force = 10;
 
 			float length = 1.0f;
-			float speed = 1.5f; 
+			float speed = 1.5f;
 			float size = 2.0f;
 
 
@@ -350,14 +389,16 @@ namespace Tomast1337
 				TimeSinceSecondaryAttack = -1f; // Slow fire rate
 				TimeSincePrimaryAttack = 1;  // penalty for changing fire type
 			}
-			
-			else {
-			
+
+			else
+			{
+
 				TimeSinceSecondaryAttack = -1.9f; // penalty for changing fire type
 				TimeSincePrimaryAttack = 0.5f; // Not so slow fire rate 
 			}
-			
-			for ( int i = 0; i < quant; i++ ){
+
+			for ( int i = 0; i < quant; i++ )
+			{
 				ShootBullet( Owner.EyePos, Owner.EyeRot.Forward, spread, force, damage, 3.0f );
 			}
 
@@ -376,32 +417,26 @@ namespace Tomast1337
 
 		private void FlameShield( bool isPrimary )
 		{
-
 		}
 
 		private void RockWall( bool isPrimary )
 		{
-
 		}
 
 		private void FireWall( bool isPrimary )
 		{
-
 		}
 
 		private void ForceField( bool isPrimary )
 		{
-
 		}
 
 		private void VampirismShot( bool isPrimary )
 		{
-
 		}
 
 		private void Tree( bool isPrimary )
 		{
-
 		}
 
 		private void Suicide( bool isPrimary )
@@ -410,23 +445,24 @@ namespace Tomast1337
 			float factor = 3 * Mana / 4;
 			createExplosion( location, factor, factor );
 		}
-		
-		public void createExplosion( Vector3 position, float size, float power) {
+
+		public void createExplosion( Vector3 position, float size, float power )
+		{
 			using ( Prediction.Off() )
 			{
 				Particles.Create( "particles/explosion.vpcf", position );
 			}
 		}
 
-		private void ProcessFlashlight() {
+		private void ProcessFlashlight()
+		{
 			FlashlightOn = !FlashlightOn;
 			PlaySound( FlashlightOn ? "flashlight-on" : "flashlight-off" );
-			
+
 			if ( worldLight.IsValid() )
 				worldLight.Enabled = FlashlightOn;
 			if ( viewLight.IsValid() )
 				viewLight.Enabled = FlashlightOn;
-
 		}
 
 		public override void Simulate( Client player )
@@ -434,7 +470,8 @@ namespace Tomast1337
 			base.Simulate( player );
 			ProcessMana();
 			ProcessSlotstButtons();
-			if ( Input.Pressed( InputButton.Flashlight ) ) {
+			if ( Input.Pressed( InputButton.Flashlight ) )
+			{
 				ProcessFlashlight();
 			}
 		}
