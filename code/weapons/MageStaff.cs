@@ -5,6 +5,7 @@
 	[Library( "weapon_magestaff", Title = "MageStaff", Spawnable = true )]
 	public partial class MageStaff : BaseWeapon
 	{
+		// Elements
 		public bool Fire { get; set; } = false;
 
 		public bool Earth { get; set; } = false;
@@ -13,8 +14,12 @@
 
 		public bool Life { get; set; } = false;
 
+		int selectedAttack = 0;
+
+		// Mana / Ammo
 		public float Mana { get; set; } = 100;
 
+		// Flashligh stuff
 		bool FlashlightOn = false;
 
 		protected virtual Vector3 LightOffset => Vector3.Forward * 10;
@@ -23,13 +28,15 @@
 
 		private SpotLightEntity viewLight;
 
+		// fire rate
 		public override float PrimaryRate => 1 / 1.5f;
 
 		public override float SecondaryRate => 2f;
 
-		int selectedAttack = 0;
-
 		public override string ViewModelPath => "weapons/rust_pumpshotgun/v_rust_pumpshotgun.vmdl";
+
+		// tree
+		Curve curve;
 
 		public override void Reload()
 		{
@@ -68,6 +75,8 @@
 			worldLight.SetParent( this, "slide", new Transform( LightOffset ) );
 			worldLight.EnableHideInFirstPerson = true;
 			worldLight.Enabled = FlashlightOn;
+
+			curve = new Curve( 20, 256, 1536 );
 		}
 
 		public override void CreateViewModel()
@@ -95,24 +104,40 @@
 			{
 				Fire = !Fire;
 				processCurrentPower();
+				if ( Fire )
+					Sound.FromEntity( "staff.fireenable", this );
+				else
+					Sound.FromEntity( "staff.powerdown", this );
 			}
 
 			if ( Input.Pressed( InputButton.Slot2 ) )
 			{
 				Earth = !Earth;
 				processCurrentPower();
+				if ( Earth )
+					Sound.FromEntity( "staff.rockenable", this );
+				else
+					Sound.FromEntity( "staff.powerdown", this );
 			}
 
 			if ( Input.Pressed( InputButton.Slot3 ) )
 			{
 				Lightning = !Lightning;
 				processCurrentPower();
+				if ( Lightning )
+					Sound.FromEntity( "staff.lightningenable", this );
+				else
+					Sound.FromEntity( "staff.powerdown", this );
 			}
 
 			if ( Input.Pressed( InputButton.Slot4 ) )
 			{
 				Life = !Life;
 				processCurrentPower();
+				if ( Life )
+					Sound.FromEntity( "staff.lifeenable", this );
+				else
+					Sound.FromEntity( "staff.powerdown", this );
 			}
 		}
 
@@ -180,24 +205,34 @@
 			switch ( selectedAttack )
 			{
 				case 0:// Base -> wind gust
-					if(Mana > 0)
+					if ( Mana > 12f )
+					{
 						WindGust( isPrimary );
+					}
 					break;
 				case 1:// Fire -> flame thrower
 					if ( Mana > 0 )
+					{
 						Flamethrower( isPrimary );
+					}
 					break;
 				case 2:// Earth -> rock boulder
 					if ( Mana > 0 )
+					{
 						Rockboulder( isPrimary );
+					}
 					break;
 				case 3:// Fire Earth -> meteor
 					if ( Mana > 0 )
+					{
 						Meteor( isPrimary );
+					}
 					break;
 				case 4:// Lightning -> Lightning strike
 					if ( Mana > 0 )
+					{
 						Lightningstrike( isPrimary );
+					}
 					break;
 				case 5:// Fire Lightning -> Laser shot
 					if ( Mana > 0 )
@@ -205,43 +240,63 @@
 					break;
 				case 6:// Earth Lightning -> Fast rocks shots, Submachine gun like
 					if ( Mana > 0 )
+					{
 						StoneSMG( isPrimary );
+					}
 					break;
 				case 7:// Fire Earth Lightning -> muliple rocks shots, Shotgun like
-					if ( Mana > 0 )
+					if ( Mana > 10 )
+					{
 						StoneShotgun( isPrimary );
+					}
 					break;
 				case 8:// Life -> heal
 					if ( Mana > 0 )
+					{
 						Heal( isPrimary );
+					}
 					break;
 				case 9:// Fire Life -> flame shield
 					if ( Mana > 0 )
+					{
 						FlameShield( isPrimary );
+					}
 					break;
 				case 10:// Earth Life -> Rock Wall
 					if ( Mana > 0 )
+					{
 						RockWall( isPrimary );
+					}
 					break;
 				case 11:// Fire Earth Life -> Fire wall
 					if ( Mana > 0 )
+					{
 						FireWall( isPrimary );
+					}
 					break;
 				case 12:// Lightning Life -> force field
 					if ( Mana > 0 )
+					{
 						ForceField( isPrimary );
+					}
 					break;
 				case 13:// Fire Lightning Life -> Vampirism Shot, Awp like , Hit or die
 					if ( Mana > 0 )
+					{
 						VampirismShot( isPrimary );
+					}
 					break;
 				case 14:// Earth Lightning Life -> Tree Spawn
 					if ( Mana > 0 )
+					{
 						Tree( isPrimary );
+					}
 					break;
 				case 15:// Fire Earth Lightning Life -> suicide explosion
-					if ( Mana > 0 )
+					if ( Mana > 50 )
+					{
 						Suicide( isPrimary );
+					}
 					break;
 				default:
 					break;
@@ -254,6 +309,8 @@
 
 		private void WindGust( bool isPrimary )
 		{
+			float manacost = 12f;
+
 			if ( isPrimary )
 			{
 				TimeSinceSecondaryAttack = -1f; // Slow fire rate
@@ -261,10 +318,13 @@
 			}
 			else
 			{
+				Sound.FromEntity( "staff.windselfpush", this );
 				Owner.Velocity += Owner.EyeRot.Forward * 800; //Knockback
 				TimeSinceSecondaryAttack = -1f; // Slow fire rate
 				TimeSincePrimaryAttack = -1f; // Slow fire rate
 			}
+
+			Mana -= manacost;
 		}
 
 		private void Flamethrower( bool isPrimary )
@@ -341,13 +401,16 @@
 
 		private void LaserShot( bool isPrimary )
 		{
-			float damage = 3.0f;
+			float manaCost = 0.01f;
+
+			float damage = 1.0f;
 			float spread = .01f;
 			float force = 20.0f;
 
 
 			if ( !isPrimary )
 			{
+				manaCost = 1f;
 				TimeSinceSecondaryAttack = -1f; // Slow fire rate
 				TimeSincePrimaryAttack = .35697f; // penalty for changinf fire type
 			}
@@ -355,14 +418,16 @@
 			{
 				TimeSinceSecondaryAttack = -0.2f; // penalty for changing fire type
 				TimeSincePrimaryAttack = 1.5f; // Fast fire rate
-				
+
 			}
 			ShootBullet( Owner.EyePos, Owner.EyeRot.Forward, spread, force, damage, 3.0f );
+
+			Mana -= manaCost;
 		}
 
 		private void StoneSMG( bool isPrimary )
 		{
-
+			float manacost = .1f;
 			float damage = 3.0f;
 			float spread = .1f;
 
@@ -372,6 +437,8 @@
 
 			if ( !isPrimary )
 			{
+				manacost = .5f;
+
 				damage = 5.0f;
 				spread = 0.02f;
 
@@ -390,10 +457,13 @@
 			ShootBullet( Owner.EyePos, Owner.EyeRot.Forward, spread, 20.0f, damage, 3.0f );
 
 			new Sandbox.ScreenShake.Perlin( length, speed, size );
+
+			Mana -= manacost;
 		}
 
 		private void StoneShotgun( bool isPrimary )
 		{
+			float manacost = 5;
 			int quant = 10;
 			float damage = 3f;
 			float spread = .1f;
@@ -407,6 +477,8 @@
 
 			if ( !isPrimary )
 			{
+				manacost = 18;
+
 				quant = 20;
 				damage = 2f;
 				spread = .4f;
@@ -439,6 +511,8 @@
 			{
 				new Sandbox.ScreenShake.Perlin( length, speed, size );
 			}
+
+			Mana -= manacost;
 		}
 
 		private void Heal( bool isPrimary )
@@ -452,10 +526,27 @@
 
 		private void RockWall( bool isPrimary )
 		{
+			var forward = Owner.EyeRot.Forward;
+			forward = forward.Normal;
+			foreach ( var tr in TraceBullet( Owner.EyePos, Owner.EyePos + forward * 512, 20.0f ) )
+			{
+				
+				if (tr.Hit) {
+					Vector3 pos = tr.EndPos;
+					var prop = new ModelEntity();
+					prop.SetModel( "models/magicwall.vmdl" );
+					prop.Position = pos;
+					prop.Rotation = Rotation.LookAt( forward );
+					prop.SetupPhysicsFromModel( PhysicsMotionType.Static, false );
+					prop.DeleteAsync( 30 );
+				}
+				
+			}
 		}
 
 		private void FireWall( bool isPrimary )
 		{
+
 		}
 
 		private void ForceField( bool isPrimary )
@@ -468,6 +559,20 @@
 
 		private void Tree( bool isPrimary )
 		{
+			var forward = Owner.EyeRot.Forward;
+			forward = forward.Normal;
+			foreach ( var tr in TraceBullet( Owner.EyePos, Owner.EyePos + forward * 5000, 20.0f ) )
+			{
+				Vector3 pos = tr.EndPos;
+				if ( curve != null )
+				{
+					if ( curve.SetNextPoint( pos ,Owner.Position) )
+						DebugOverlay.Sphere( pos, 32, Color.Green, true, 5f );
+					else
+						DebugOverlay.Sphere( pos, 32, Color.Red, true, 5f );
+				}
+
+			}
 		}
 
 		private void Suicide( bool isPrimary )
@@ -475,6 +580,7 @@
 			Vector3 location = Owner.Position;
 			float factor = 3 * Mana / 4;
 			createExplosion( location, factor, factor );
+			Mana = 0;
 		}
 
 		public void createExplosion( Vector3 position, float size, float power )
