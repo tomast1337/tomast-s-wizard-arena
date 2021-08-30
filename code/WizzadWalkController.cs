@@ -12,7 +12,6 @@
 			AirAcceleration = 500.0f;
 			AutoJump = true;
 			Stamina = 100;
-			Acceleration = Acceleration * 2;
 		}
 
 		public override void Simulate()
@@ -63,6 +62,7 @@
 
 				Stamina -= 6.4f;
 				activeWeapon.Mana -= 5f;
+				Sound.FromEntity( "wizzard_superjump", player );
 			}
 			Velocity -= new Vector3( 0, 0, Gravity * 0.5f ) * Time.Delta;
 
