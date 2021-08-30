@@ -37,7 +37,7 @@
 
 			WizzadWalkController wwC = (WizzadWalkController)player.Controller;
 			HealthLabel.Text = $"🩸{player.Health}";
-			ManaLabel.Text = $"🔮{activeWeapon.Mana:0}";
+			ManaLabel.Text = $"🔮{(activeWeapon.Mana>=0? activeWeapon.Mana : 0):0}";
 			StaminaLabel.Text = $"💪{(wwC == null ? 0 : (int)wwC.Stamina):0}";
 		}
 	}
