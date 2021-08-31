@@ -287,7 +287,7 @@
 					}
 					break;
 				case 14:// Earth Lightning Life -> Tree Spawn
-					if ( Mana > 0 )
+					if ( Mana > 80 )
 					{
 						Tree( isPrimary );
 					}
@@ -566,10 +566,21 @@
 				Vector3 pos = tr.EndPos;
 				if ( curve != null )
 				{
-					if ( curve.SetNextPoint( pos ,Owner.Position) )
-						DebugOverlay.Sphere( pos, 32, Color.Green, true, 5f );
-					else
-						DebugOverlay.Sphere( pos, 32, Color.Red, true, 5f );
+					CurveStates state = curve.SetNextPoint( pos, Owner.Position );
+					Log.Info( state );
+				
+					switch (state){
+						case CurveStates.ValidPoint:
+							DebugOverlay.Sphere( pos, 32, Color.Green, true, 5f );
+							break;
+						case CurveStates.InvalidPoint:
+							DebugOverlay.Sphere( pos, 32, Color.Red, true, 5f );
+							break;
+						case CurveStates.Build:
+							DebugOverlay.Sphere( pos, 32, Color.Blue, true, 5f );
+							Mana =-50;
+							break;
+					}						
 				}
 
 			}

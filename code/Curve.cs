@@ -3,6 +3,13 @@
 	using Sandbox;
 	using System.Threading.Tasks;
 
+	enum CurveStates
+	{
+		InvalidPoint,
+		ValidPoint,
+		Build
+	}
+
 	class Curve
 	{
 		private Vector3 Point0 { get; set; } = Vector3.Zero;
@@ -41,23 +48,22 @@
 			return distance >= MaxDistance && distance <= MinDistance;
 		}
 
-		public bool SetNextPoint( Vector3 point, Vector3 PlayerPosition )
+		public CurveStates SetNextPoint( Vector3 point, Vector3 PlayerPosition )
 		{
 			if ( Point0 == Vector3.Zero )
 			{
 				Point0 = point;
-				return true;
+				return CurveStates.ValidPoint;
 			}
 			else if ( Point1 == Vector3.Zero )
 			{
 				if ( IsaValidDistace( point, Point0 ) )
 				{
 					Point1 = point;
-					return true;
+					return CurveStates.ValidPoint;
 				}
-
 				else
-					return false;
+					return CurveStates.InvalidPoint;
 			}
 
 			else if ( Point2 == Vector3.Zero )
@@ -65,34 +71,20 @@
 				if ( IsaValidDistace( point, Point1 ) )
 				{
 					Point2 = point;
-					return true;
+					return CurveStates.ValidPoint;
 				}
 
 				else
-					return false;
+					return CurveStates.InvalidPoint;
 			}
 			else if ( Point3 == Vector3.Zero )
-			{
 				if ( IsaValidDistace( point, Point2 ) )
 				{
 					Point3 = point;
 					BuildCurve( PlayerPosition );
-					return true;
+					return CurveStates.Build;
 				}
-
-				else
-					return false;
-			}
-
-			else
-			{
-				// Reset
-				Point0 = point;
-				Point1 = Vector3.Zero;
-				Point2 = Vector3.Zero;
-				Point3 = Vector3.Zero;
-				return true;
-			}
+				return CurveStates.InvalidPoint;
 		}
 
 		private void BuildSegment( float t )
@@ -103,14 +95,17 @@
 			prop.Position = position;
 			prop.SetupPhysicsFromModel( PhysicsMotionType.Static, false );
 			Vector3 normal = getNormal( t );
-			prop.Rotation = Rotation.LookAt( new Vector3( normal.x, normal.y ) ).RotateAroundAxis( Vector3.Up, 90 );
-			prop.DeleteAsync( 30 );
+			prop.Rotation = Rotation.LookAt( normal ).RotateAroundAxis( Vector3.Up, 90 );
+
+
+			prop.DeleteAsync( 45 );
 			Particles.Create( "particles/explosion_smoke.vpcf", prop.Position );
 			Sound.FromEntity( "tree.spawn", prop );
 		}
 
 		private async void BuildCurve( Vector3 PlayerPosition )
 		{
+			float MaxSize = MaxDistance * 4;
 
 			float TSize = 0.025f;
 			if ( Vector3.DistanceBetween( PlayerPosition, Point0 ) < Vector3.DistanceBetween( PlayerPosition, Point3 ) )
@@ -127,6 +122,11 @@
 					BuildSegment( t );
 					await Task.Delay( 50 );
 				}
+			// Resete
+			Point0 = Vector3.Zero;
+			Point1 = Vector3.Zero;
+			Point2 = Vector3.Zero;
+			Point3 = Vector3.Zero;
 		}
 
 		private Vector3 getNormal( float t )
