@@ -12,6 +12,11 @@
 
 	class Curve
 	{
+		static string[] models = { "models/tree/log0.vmdl_c",
+		"models/tree/log1.vmdl_c",
+		"models/tree/log2.vmdl_c",
+		"models/tree/log3.vmdl_c"};
+
 		private Vector3 Point0 { get; set; } = Vector3.Zero;
 
 		private Vector3 Point1 { get; set; } = Vector3.Zero;
@@ -84,22 +89,23 @@
 					BuildCurve( PlayerPosition );
 					return CurveStates.Build;
 				}
-				return CurveStates.InvalidPoint;
+			return CurveStates.InvalidPoint;
 		}
 
 		private void BuildSegment( float t )
 		{
 			Vector3 position = getPoint( t );
 			var prop = new ModelEntity();
-			prop.SetModel( "models/Tree.vmdl_c" );
+			
+			
+			prop.SetModel( Rand.FromArray<string>(models) );
 			prop.Position = position;
 			prop.SetupPhysicsFromModel( PhysicsMotionType.Static, false );
 			Vector3 normal = getNormal( t );
 			prop.Rotation = Rotation.LookAt( normal ).RotateAroundAxis( Vector3.Up, 90 );
-
-
+	
 			prop.DeleteAsync( 45 );
-			Particles.Create( "particles/explosion_smoke.vpcf", prop.Position );
+			Particles.Create( "particles/smoke_spawn.vpcf", prop.Position );
 			Sound.FromEntity( "tree.spawn", prop );
 		}
 
