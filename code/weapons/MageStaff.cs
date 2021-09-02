@@ -528,25 +528,33 @@
 		{
 			var forward = Owner.EyeRot.Forward;
 			forward = forward.Normal;
-			foreach ( var tr in TraceBullet( Owner.EyePos, Owner.EyePos + forward * 512, 20.0f ) )
+			foreach ( var tr in TraceBullet( Owner.EyePos, Owner.EyePos + forward * 2*512/3, 20.0f ) )
 			{
-				
-				if (tr.Hit) {
+
+				if ( tr.Hit )
+				{
 					Vector3 pos = tr.EndPos;
-					var prop = new ModelEntity();
-					prop.SetModel( "models/magicwall.vmdl" );
-					prop.Position = pos;
-					prop.Rotation = Rotation.LookAt( forward );
-					prop.SetupPhysicsFromModel( PhysicsMotionType.Static, false );
-					prop.DeleteAsync( 30 );
+					if ( Vector3.DistanceBetween( pos, Owner.Position ) > 128 )
+					{
+						var prop = new ModelEntity();
+						prop.SetModel( "models/RockWall/rockwall.vmdl_c" );
+						prop.Position = pos;
+						prop.Rotation = Rotation.LookAt( forward );
+						prop.SetupPhysicsFromModel( PhysicsMotionType.Static, false );
+						prop.DeleteAsync( 60 );
+						Particles.Create( "particles/smoke_spawn.vpcf", Vector3.Lerp( Owner.Position, prop.Position, 0.5f ) );
+						Sound.FromEntity( "rockwall.set", prop );
+					}
+					else {
+						Sound.FromEntity( "", this );
+					}
 				}
-				
+
 			}
 		}
 
 		private void FireWall( bool isPrimary )
 		{
-
 		}
 
 		private void ForceField( bool isPrimary )
@@ -561,15 +569,15 @@
 		{
 			var forward = Owner.EyeRot.Forward;
 			forward = forward.Normal;
+			CurveStates state;
 			foreach ( var tr in TraceBullet( Owner.EyePos, Owner.EyePos + forward * 5000, 20.0f ) )
 			{
 				Vector3 pos = tr.EndPos;
-				if ( curve != null )
+				if ( curve != null && tr.Hit )
 				{
-					CurveStates state = curve.SetNextPoint( pos, Owner.Position );
-					Log.Info( state );
-				
-					switch (state){
+					state = curve.SetNextPoint( pos, Owner );
+					switch ( state )
+					{
 						case CurveStates.ValidPoint:
 							DebugOverlay.Sphere( pos, 32, Color.Green, true, 5f );
 							break;
@@ -578,9 +586,9 @@
 							break;
 						case CurveStates.Build:
 							DebugOverlay.Sphere( pos, 32, Color.Blue, true, 5f );
-							Mana =-50;
+							Mana = -50;
 							break;
-					}						
+					}
 				}
 
 			}
