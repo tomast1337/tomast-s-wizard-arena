@@ -14,8 +14,8 @@
 						remaps = 
 						[
 							{
-								from = "material.vmat"
-								to = "materials/mossy-rock.vmat"
+								from = "cube.vmat"
+								to = "materials/3_rock.vmat"
 							},
 						]
 						use_global_default = false
@@ -28,12 +28,25 @@
 				children = 
 				[
 					{
-						_class = "PhysicsHullFromRender"
+						_class = "PhysicsMeshFile"
 						parent_bone = ""
-						surface_prop = "default"
+						surface_prop = "concrete"
 						collision_prop = "default"
-						faceMergeAngle = 20.0
-						maxHullVertices = 32
+						recenter_on_parent_bone = false
+						offset_origin = [ 0.0, 0.0, 0.0 ]
+						offset_angles = [ 0.0, 0.0, 0.0 ]
+						align_origin_x_type = "None"
+						align_origin_y_type = "None"
+						align_origin_z_type = "None"
+						filename = "models/RockWall/RockWall.colision.fbx"
+						import_scale = 1.0
+						maxMeshVertices = 0
+						qemError = 0.0
+						import_filter = 
+						{
+							exclude_by_default = false
+							exception_list = [  ]
+						}
 					},
 				]
 			},
@@ -43,7 +56,7 @@
 				[
 					{
 						_class = "RenderMeshFile"
-						filename = "models/MagicWall.fbx"
+						filename = "models/RockWall/RockWall.fbx"
 						import_translation = [ 0.0, 0.0, 0.0 ]
 						import_rotation = [ 0.0, 0.0, 0.0 ]
 						import_scale = 1.0
