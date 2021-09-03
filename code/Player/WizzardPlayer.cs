@@ -6,7 +6,7 @@
 	public partial class WizzardPlayer : Player
 	{
 		private DamageInfo lastDamage;
-
+		Sound speedWindSound;
 		public WizzardPlayer()
 		{
 			Inventory = new BaseInventory( this );
@@ -50,6 +50,9 @@
 			Dress( "models/citizen_clothes/shoes/shoes.workboots.vmdl" );
 
 			Inventory.Add( Library.Create<Entity>( "weapon_magestaff" ), true );
+
+			speedWindSound = Sound.FromEntity( "wind.speed", this);
+			speedWindSound.SetVolume(0);
 
 			base.Respawn();
 		}
@@ -165,6 +168,9 @@
 		public override void Simulate( Client cl )
 		{
 			SimulateActiveChild( cl, ActiveChild );
+			float windVolume = Velocity.Length;
+			windVolume = windVolume > 600 ? windVolume - 200 : 0;
+			speedWindSound.SetVolume( (windVolume > 600 ? 600 : windVolume*2) / 600 );
 			base.Simulate( cl );
 		}
 	}
