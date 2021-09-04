@@ -10,24 +10,17 @@
 		Build
 	}
 
-	class Curve
+	abstract class CubicCurve
 	{
-		private static string[] models = { "models/tree/log0.vmdl_c",
-		"models/tree/log1.vmdl_c",
-		"models/tree/log2.vmdl_c",
-		"models/tree/log3.vmdl_c"};
+		protected Vector3 Point0 { get; set; } = Vector3.Zero;
 
-		private Vector3 Point0 { get; set; } = Vector3.Zero;
+		protected Vector3 Point1 { get; set; } = Vector3.Zero;
 
-		private Vector3 Point1 { get; set; } = Vector3.Zero;
+		protected Vector3 Point2 { get; set; } = Vector3.Zero;
 
-		private Vector3 Point2 { get; set; } = Vector3.Zero;
+		protected Vector3 Point3 { get; set; } = Vector3.Zero;
 
-		private Vector3 Point3 { get; set; } = Vector3.Zero;
-
-		private int Segments;
-
-		private float MaxDistance, MinDistance;
+		protected float MaxDistance, MinDistance;
 
 		public override string ToString()
 		{
@@ -36,24 +29,31 @@
 
 		public bool IsAllSet()
 		{
-
 			return Point0 != Vector3.Zero && Point1 != Vector3.Zero && Point2 != Vector3.Zero && Point3 != Vector3.Zero;
 		}
 
-		public Curve( int segments, float maxDistance, float minDistance )
-		{
-			Segments = segments;
-			MaxDistance = maxDistance;
-			MinDistance = minDistance;
-		}
-
-		private bool IsaValidDistace( Vector3 pointA, Vector3 pointB )
+		protected bool IsaValidDistace( Vector3 pointA, Vector3 pointB )
 		{
 			float distance = Vector3.DistanceBetween( pointA, pointB );
 			return distance >= MaxDistance && distance <= MinDistance;
 		}
 
-		private Vector3 getTNormal( float t )
+
+		public float Length() {
+			float sum = 0f;
+			Vector3 previousPoint = Point0;
+			Vector3 nextPoint;
+			float TSize = 0.025f;
+			for ( float t = 0; t < 1; t += TSize )
+			{
+				nextPoint = getTPoint( t );
+				sum += Vector3.DistanceBetween( previousPoint, nextPoint );
+				previousPoint = nextPoint;
+			}
+			return sum;
+		}
+
+		public Vector3 getTNormal( float t )
 		{
 			float tt = t * t;
 			return (Point0 * (-3 * tt + 6 * t - 3) +
@@ -62,7 +62,7 @@
 				Point3 * 3 * tt).Normal;
 		}
 
-		private Vector3 getTPoint( float t )
+		public Vector3 getTPoint( float t )
 		{
 			float ttt = t * t * t;
 			float tt = t * t;
@@ -71,8 +71,22 @@
 				Point2 * (-3 * ttt + 3 * tt) +
 				Point3 * ttt;
 		}
+	}
 
-		private void BuildSegment( float t )
+	class Tree : CubicCurve
+	{
+		private static string[] models = { "models/tree/log0.vmdl_c",
+		"models/tree/log1.vmdl_c",
+		"models/tree/log2.vmdl_c",
+		"models/tree/log3.vmdl_c"};
+
+		public Tree(float maxDistance, float minDistance )
+		{
+			MaxDistance = maxDistance;
+			MinDistance = minDistance;
+		}
+
+		protected void BuildSegment( float t )
 		{
 			Vector3 position = getTPoint( t );
 			var prop = new ModelEntity();
@@ -89,11 +103,11 @@
 			Sound.FromEntity( "tree.spawn", prop );
 		}
 
-		private async void BuildCurve( Vector3 PlayerPosition )
+		private async void BuildTree( Vector3 PlayerPosition )
 		{
 			float MaxSize = MaxDistance * 4;
-
-			float TSize = 0.025f;
+			float length = Length();
+			float TSize = MaxSize / length /20;
 			if ( Vector3.DistanceBetween( PlayerPosition, Point0 ) < Vector3.DistanceBetween( PlayerPosition, Point3 ) )
 
 				for ( float t = 0; t < 1; t += TSize )
@@ -108,7 +122,7 @@
 					BuildSegment( t );
 					await Task.Delay( 25 );
 				}
-			// Reset
+
 			Point0 = Vector3.Zero;
 			Point1 = Vector3.Zero;
 			Point2 = Vector3.Zero;
@@ -148,7 +162,7 @@
 				if ( IsaValidDistace( point, Point2 ) )
 				{
 					Point3 = point;
-					BuildCurve( Owner.Position );
+					BuildTree( Owner.Position );
 					return CurveStates.Build;
 				}
 			return CurveStates.InvalidPoint;

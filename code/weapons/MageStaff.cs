@@ -36,7 +36,7 @@
 		public override string ViewModelPath => "weapons/rust_pumpshotgun/v_rust_pumpshotgun.vmdl";
 
 		// tree
-		Curve curve;
+		Tree curve;
 
 		public override void Reload()
 		{
@@ -76,7 +76,7 @@
 			worldLight.EnableHideInFirstPerson = true;
 			worldLight.Enabled = FlashlightOn;
 
-			curve = new Curve( 20, 256, 1536 );
+			curve = new Tree( 256, 1536 );
 		}
 
 		public override void CreateViewModel()
