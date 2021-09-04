@@ -163,6 +163,8 @@
 			EnableAllCollisions = false;
 			EnableDrawing = false;
 			Inventory.DeleteContents();
+
+			speedWindSound.Stop();
 		}
 
 		public override void Simulate( Client cl )
@@ -170,7 +172,7 @@
 			SimulateActiveChild( cl, ActiveChild );
 			float windVolume = Velocity.Length;
 			windVolume = windVolume > 600 ? windVolume - 200 : 0;
-			speedWindSound.SetVolume( (windVolume > 600 ? 600 : windVolume*2) / 600 );
+			speedWindSound.SetVolume( (windVolume > 600 ? 600 : windVolume) / 600 );
 			base.Simulate( cl );
 		}
 	}
