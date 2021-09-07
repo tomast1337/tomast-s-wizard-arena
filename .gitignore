@@ -17,7 +17,7 @@ tools_thumbnail_cache.bin
 *.png
 *.jpeg
 *.fbx
-*blend
-*blend1
+*.blend
+*.blend1
 .intermediate/net5.0/sandbox.deps.json
 maps/editor/_bakeresourcecache/toolscene_default_baked/*
